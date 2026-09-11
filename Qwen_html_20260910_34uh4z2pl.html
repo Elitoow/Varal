@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🧷 VARAL — pendure qualquer coisa</title>
+<meta name="theme-color" content="#f4efe2">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Karla:ital,wght@0,400;0,500;0,700;0,800;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+:where(a,button,input,select,textarea):focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+[hidden]{display:none!important}
+img{display:block;max-width:100%}
+a{color:inherit}
+::selection{background:var(--pin1);color:#fff}
+:root{
+ --bg:#f4efe2;--panel:#fffdf7;--panel2:#faf5e8;--ink:#211c14;--muted:#7c7362;--line:#ddd2b8;
+ --rope:#8a6a44;--pin1:#e0472e;--pin2:#2456d4;--pin3:#e8a013;
+ --acc:#e0472e;--acc-ink:#fff;--acc-soft:rgba(224,71,46,.12);
+ --shadow:0 14px 30px rgba(84,64,20,.12);
+ --fd:'Bricolage Grotesque',sans-serif;--fb:'Karla',sans-serif;--fm:'Space Mono',monospace}
+body{font-family:var(--fb);background:var(--bg);color:var(--ink);overflow-x:hidden;line-height:1.6;
+ transition:background .5s,color .5s;background-image:radial-gradient(rgba(138,106,68,.07) 1px,transparent 1.4px);background-size:26px 26px}
+body.noite{--bg:#0f1320;--panel:#181e2e;--panel2:#141927;--ink:#f0ead8;--muted:#a09a8a;--line:#2b3350;
+ --rope:#c9b28a;--acc-soft:rgba(224,71,46,.18);--shadow:0 16px 36px rgba(0,0,0,.5)}
+body.noite{background-image:radial-gradient(1px 1px at 15% 25%,rgba(255,255,255,.5),transparent),
+ radial-gradient(1.5px 1.5px at 60% 12%,rgba(255,255,255,.4),transparent),
+ radial-gradient(1px 1px at 85% 40%,rgba(255,255,255,.45),transparent),
+ radial-gradient(1px 1px at 35% 60%,rgba(255,255,255,.3),transparent)}
+.wrap{width:min(1200px,93%);margin-inline:auto}
+section{scroll-margin-top:90px}
+h1,h2,h3,h4{font-family:var(--fd);line-height:1.08;letter-spacing:-.01em}
+.mono{font-family:var(--fm);font-size:.72rem;letter-spacing:.06em}
+kbd{font-family:var(--fm);font-size:.72rem;border:1px solid var(--line);border-bottom-width:3px;border-radius:6px;padding:.1rem .45rem;background:var(--panel)}
+.btn{display:inline-flex;align-items:center;gap:.5rem;padding:.85rem 1.3rem;border:2px solid var(--ink);border-radius:12px;
+ background:var(--panel);color:var(--ink);font-family:var(--fd);font-weight:700;font-size:.86rem;letter-spacing:.03em;
+ text-decoration:none;cursor:pointer;box-shadow:4px 4px 0 var(--ink);transition:transform .15s,box-shadow .15s,background .3s,color .3s}
+.btn:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--ink)}
+.btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.btn.acc{background:var(--acc);color:var(--acc-ink);border-color:var(--ink)}
+.btn.small{padding:.45rem .8rem;font-size:.72rem;box-shadow:3px 3px 0 var(--ink)}
+.chip{padding:.5rem .95rem;border:2px solid var(--line);border-radius:999px;background:var(--panel);color:var(--ink);
+ font-family:var(--fb);font-weight:800;font-size:.78rem;cursor:pointer;transition:.2s}
+.chip:hover{border-color:var(--ink);transform:translateY(-2px)}
+.chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.tagpill{border:1.5px solid var(--line);background:transparent;color:var(--muted);border-radius:999px;padding:.28rem .7rem;
+ font-size:.72rem;font-weight:800;cursor:pointer;transition:.2s;font-family:var(--fb)}
+.tagpill:hover{color:var(--acc);border-color:var(--acc);transform:rotate(-2deg)}
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease var(--d,0s),transform .7s cubic-bezier(.2,.7,.2,1) var(--d,0s)}
+.reveal.in{opacity:1;transform:none}
+.toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,150%);z-index:440;background:var(--ink);color:var(--bg);
+ padding:.8rem 1.5rem;border-radius:999px;font-weight:800;font-size:.9rem;box-shadow:var(--shadow);
+ transition:transform .4s cubic-bezier(.2,.7,.2,1);max-width:92vw;text-align:center}
+.toast.show{transform:translate(-50%,0)}
+.confetti{position:fixed;z-index:420;pointer-events:none;top:0;left:0}
+.floater{position:fixed;z-index:410;pointer-events:none;font-size:1.6rem;animation:rise 1s ease-out forwards}
+@keyframes rise{to{transform:translateY(-110px) rotate(16deg);opacity:0}}
+
+/* prendedor */
+.pin{position:absolute;top:-12px;width:12px;height:26px;border-radius:4px;z-index:4;
+ background:linear-gradient(180deg,var(--pc,#e0472e),rgba(0,0,0,.28));box-shadow:0 2px 3px rgba(0,0,0,.35)}
+.pin::after{content:"";position:absolute;left:50%;top:7px;width:2px;height:11px;transform:translateX(-50%);background:rgba(255,255,255,.55);border-radius:2px}
+.p1{--pc:#e0472e}.p2{--pc:#2456d4}.p3{--pc:#e8a013}
+
+/* ============ TOPO ============ */
+.top{position:sticky;top:0;z-index:130;background:var(--bg);border-bottom:2px solid var(--line);transition:background .5s}
+body.noite .top{background:rgba(15,19,32,.94)}
+.top-in{display:flex;align-items:center;gap:1rem;padding:.75rem 0;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:.5rem;background:none;border:none;cursor:pointer;font-family:var(--fd);
+ font-weight:800;font-size:1.2rem;letter-spacing:.02em;color:var(--ink)}
+.brand .bpin{font-size:1.3rem;display:inline-block;animation:swing 3s ease-in-out infinite;transform-origin:top center}
+@keyframes swing{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
+.nnav{display:flex;gap:.4rem;margin-inline:auto}
+.nbtn{background:none;border:none;font-family:var(--fb);font-weight:800;font-size:.85rem;color:var(--muted);cursor:pointer;
+ padding:.5rem .8rem;border-radius:999px;transition:.2s}
+.nbtn:hover{color:var(--ink);background:var(--acc-soft)}
+.top-acts{display:flex;gap:.5rem;align-items:center}
+.iconbtn{position:relative;width:42px;height:42px;border-radius:12px;border:2px solid var(--line);background:var(--panel);
+ font-size:1.05rem;cursor:pointer;transition:.2s;display:grid;place-items:center}
+.iconbtn:hover{transform:translateY(-3px) rotate(-4deg);border-color:var(--ink)}
+.badge{position:absolute;top:-6px;right:-6px;background:var(--pin1);color:#fff;font-size:.6rem;font-weight:800;
+ min-width:18px;height:18px;border-radius:999px;display:grid;place-items:center;padding:0 4px;border:2px solid var(--bg)}
+.meava{width:42px;height:42px;border-radius:12px;border:2px solid var(--ink);cursor:pointer;object-fit:cover;transition:.2s}
+.meava:hover{transform:rotate(-4deg) scale(1.06)}
+.notif-wrap{position:relative}
+.notif{position:absolute;top:calc(100% + 10px);right:0;width:min(320px,88vw);background:var(--panel);border:2px solid var(--ink);
+ border-radius:14px;box-shadow:8px 8px 0 rgba(0,0,0,.2);padding:.6rem;z-index:150;display:none}
+.notif.open{display:block;animation:sheetIn .3s cubic-bezier(.2,.9,.3,1.2)}
+.nitem{display:flex;gap:.7rem;padding:.65rem .7rem;border-radius:10px;font-size:.84rem;font-weight:600;cursor:pointer;transition:.15s}
+.nitem:hover{background:var(--acc-soft)}
+.nitem.unread{background:var(--acc-soft)}
+.nitem.unread::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--pin1);flex:none;margin:auto 0}
+.nitem span:first-child{font-size:1.1rem}
+
+/* ============ ABERTURA ============ */
+.hero{padding:clamp(2.5rem,6vw,4.5rem) 0 0}
+.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:2.5rem;align-items:center}
+.hero .eyebrow{font-family:var(--fm);font-size:.72rem;letter-spacing:.24em;text-transform:uppercase;color:var(--acc);font-weight:700}
+.hero h1{font-size:clamp(2.6rem,6.5vw,4.8rem);font-weight:800;margin:.7rem 0 1rem}
+.hero h1 .hl{background:linear-gradient(transparent 58%,var(--acc-soft) 58%);box-decoration-break:clone}
+body.noite .hero h1 .hl{color:var(--pin3)}
+.hero .lead{color:var(--muted);font-size:1.05rem;max-width:48ch;font-weight:500}
+.hero-cta{display:flex;gap:.9rem;margin-top:1.8rem;flex-wrap:wrap}
+.hstats{display:flex;gap:2rem;margin-top:2.2rem;flex-wrap:wrap}
+.hstat .n{font-family:var(--fd);font-weight:800;font-size:1.7rem}
+.hstat .l{font-size:.64rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);font-weight:800}
+.rope{position:relative;height:310px}
+.ropesvg{position:absolute;inset:0;width:100%;height:100%}
+.mcard{position:absolute;width:clamp(96px,12vw,140px);background:var(--panel);border:2px solid var(--ink);border-radius:8px;
+ padding:7px 7px .5rem;box-shadow:var(--shadow);transform-origin:top center;animation:sway var(--sd,4s) ease-in-out infinite;cursor:pointer}
+.mcard img{border-radius:4px;aspect-ratio:4/3;object-fit:cover}
+.mcard span{display:block;text-align:center;font-family:var(--fd);font-weight:700;font-size:.66rem;letter-spacing:.06em;padding-top:.35rem;text-transform:uppercase}
+@keyframes sway{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+.m1{left:0;top:12px;--sd:3.6s}.m2{left:20%;top:66px;--sd:4.4s}.m3{left:41%;top:88px;--sd:3.9s}
+.m4{left:61%;top:70px;--sd:4.8s}.m5{left:80%;top:22px;--sd:4.1s}
+.ticker{margin-top:1.4rem;border-block:2px solid var(--line);background:var(--panel);padding:.7rem 0;overflow:hidden}
+.ticker .tin{display:flex;align-items:center;gap:.8rem;justify-content:center;font-family:var(--fm);font-size:.78rem;color:var(--muted)}
+.ticker .dotlive{width:9px;height:9px;border-radius:50%;background:#3faf5e;box-shadow:0 0 10px #3faf5e;animation:pulse 1.5s infinite;flex:none}
+@keyframes pulse{50%{opacity:.35}}
+#tickMsg{transition:opacity .4s}
+
+/* ============ LAYOUT ============ */
+.layout{display:grid;grid-template-columns:255px minmax(0,1fr);gap:2rem;padding-block:2.6rem;align-items:start}
+.sidebar{position:sticky;top:86px;display:flex;flex-direction:column;gap:1rem}
+.sidecard{background:var(--panel);border:2px solid var(--line);border-radius:14px;padding:1.1rem;box-shadow:var(--shadow);transition:background .5s}
+.sidecard h4{font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin-bottom:.8rem}
+.me-row{display:flex;gap:.8rem;align-items:center}
+.me-row img{width:52px;height:52px;border-radius:14px;border:2px solid var(--ink)}
+.me-row b{font-family:var(--fd);font-size:1rem;display:block}
+.lvl{display:inline-block;background:var(--acc);color:#fff;border-radius:999px;padding:.1rem .6rem;font-size:.64rem;font-weight:800;letter-spacing:.08em}
+.streak{margin-top:.6rem;font-weight:800;font-size:.8rem;color:var(--pin3)}
+.trend{display:flex;flex-direction:column;gap:.45rem}
+.trend button{display:flex;justify-content:space-between;background:none;border:none;font-family:var(--fb);font-weight:800;
+ font-size:.85rem;color:var(--ink);cursor:pointer;padding:.3rem .4rem;border-radius:8px;transition:.15s}
+.trend button:hover{background:var(--acc-soft);color:var(--acc);transform:translateX(3px)}
+.trend button i{font-style:normal;color:var(--muted);font-size:.7rem;font-weight:700}
+.sug{display:flex;flex-direction:column;gap:.7rem}
+.sug-row{display:flex;gap:.6rem;align-items:center}
+.sug-row img{width:36px;height:36px;border-radius:10px;border:2px solid var(--line)}
+.sug-row b{font-size:.82rem;display:block;line-height:1.2}
+.sug-row span{font-size:.68rem;color:var(--muted);font-weight:700}
+.fbtn{margin-left:auto;border:2px solid var(--ink);background:var(--panel);border-radius:999px;padding:.28rem .7rem;
+ font-weight:800;font-size:.68rem;cursor:pointer;transition:.2s;font-family:var(--fb)}
+.fbtn:hover{transform:scale(1.08) rotate(-3deg)}
+.fbtn.on{background:var(--pin2);color:#fff;border-color:var(--pin2)}
+
+/* ============ POSTS ============ */
+.feed-head{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;margin-bottom:1.4rem}
+.feed-head h2{font-size:1.7rem;font-weight:800}
+.ftypes{display:flex;gap:.4rem;flex-wrap:wrap}
+#activeTag{margin-bottom:1rem}
+.post{position:relative;background:var(--panel);border:2px solid var(--line);border-radius:14px;box-shadow:var(--shadow);
+ padding:1.3rem 1.3rem 1rem;margin-bottom:1.8rem;transform:rotate(var(--rot,0deg));transition:transform .3s,background .5s,border-color .5s}
+.post:hover{transform:rotate(0) translateY(-5px)}
+.post.hang{animation:hangIn .7s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes hangIn{from{transform:translateY(-50px) rotate(calc(var(--rot) - 7deg));opacity:0}}
+.post.wind{animation:windk 1.3s ease}
+@keyframes windk{30%{transform:rotate(calc(var(--rot) + 4deg))}60%{transform:rotate(calc(var(--rot) - 3deg))}}
+.p-head{display:flex;gap:.7rem;align-items:center;margin-bottom:.9rem}
+.ava{width:44px;height:44px;border-radius:12px;border:2px solid var(--ink);cursor:pointer;object-fit:cover;transition:.2s}
+.ava:hover{transform:rotate(-6deg)}
+.p-head .who{cursor:pointer}
+.p-head .who b{font-family:var(--fd);font-size:.95rem;display:block;line-height:1.2}
+.p-head .who span{font-family:var(--fm);font-size:.66rem;color:var(--muted)}
+.ptype{margin-left:auto;font-size:.64rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;
+ border:2px solid var(--line);border-radius:999px;padding:.3rem .7rem;color:var(--muted);white-space:nowrap}
+.p-media{position:relative;border-radius:10px;overflow:hidden;border:2px solid var(--line);cursor:pointer}
+.p-media img{width:100%;aspect-ratio:16/9;object-fit:cover;transition:transform .6s}
+.p-media:hover img{transform:scale(1.04)}
+.playov{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+ background:linear-gradient(transparent 45%,rgba(12,12,18,.55))}
+.playov .pb{width:58px;height:58px;border-radius:50%;background:rgba(255,255,255,.92);border:none;font-size:1.2rem;
+ cursor:pointer;display:grid;place-items:center;box-shadow:0 6px 18px rgba(0,0,0,.35);transition:.2s;color:#1a1a1a}
+.playov .pb:hover{transform:scale(1.12)}
+.durchip{position:absolute;right:10px;bottom:10px;background:rgba(10,10,14,.75);color:#fff;font-family:var(--fm);
+ font-size:.64rem;padding:.25rem .5rem;border-radius:6px}
+.excerpt{border-left:5px solid var(--pin1);background:var(--acc-soft);padding:1.2rem 1.4rem;border-radius:8px;
+ font-style:italic;font-size:1.04rem;cursor:pointer}
+.codebox{background:#10151d;color:#cfd6e4;font-family:var(--fm);font-size:.76rem;border-radius:10px;padding:1rem;border:2px solid var(--line);cursor:pointer}
+.codebox .ch{display:flex;gap:.6rem;align-items:center;margin-bottom:.7rem;color:#fff;font-weight:700}
+.langdot{width:10px;height:10px;border-radius:50%}
+.codebox pre{color:#8fa3c4;line-height:1.7;white-space:pre-wrap}
+.codebox pre b{color:#7ee787;font-weight:400}
+.codebox .cf{margin-top:.7rem;color:#6b7a94;font-size:.66rem;letter-spacing:.08em}
+.bigpin{position:absolute;inset:0;display:grid;place-items:center;font-size:4rem;pointer-events:none;animation:bigpop .8s ease forwards}
+@keyframes bigpop{0%{transform:scale(0) rotate(-30deg);opacity:0}35%{transform:scale(1.3) rotate(6deg);opacity:1}100%{transform:scale(1) rotate(0);opacity:0}}
+.p-title{font-size:1.25rem;font-weight:800;margin:.9rem 0 .3rem}
+.p-desc{color:var(--muted);font-size:.94rem;font-weight:500}
+.p-tags{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.8rem}
+.p-actions{display:flex;gap:.3rem;margin-top:.9rem;border-top:2px dashed var(--line);padding-top:.7rem;flex-wrap:wrap}
+.act{display:inline-flex;gap:.4rem;align-items:center;background:none;border:none;padding:.42rem .75rem;border-radius:999px;
+ font-weight:800;font-size:.85rem;cursor:pointer;color:var(--muted);transition:.2s;font-family:var(--fb)}
+.act:hover{background:var(--acc-soft);color:var(--ink);transform:translateY(-2px)}
+.act:active{transform:scale(.9)}
+.act.like.on{color:var(--pin1)}
+.act.like.on .pi{animation:pinpop .5s cubic-bezier(.2,1.6,.4,1)}
+@keyframes pinpop{0%{transform:scale(0)}60%{transform:scale(1.5) rotate(20deg)}}
+.act.save.on{color:var(--pin2)}
+.p-comments{border-top:2px dashed var(--line);margin-top:.7rem;padding-top:.8rem}
+.cmt-item{font-size:.88rem;margin:.4rem 0}
+.cmt-item b{color:var(--ink)}
+.cmt-item.me b{color:var(--acc)}
+.cform{display:flex;gap:.5rem;margin-top:.7rem}
+.cform input{flex:1;background:var(--panel2);border:2px solid var(--line);border-radius:999px;padding:.5rem 1rem;
+ font-family:var(--fb);font-size:.85rem;color:var(--ink)}
+.cform input:focus{outline:none;border-color:var(--acc)}
+
+/* ============ EXPLORAR ============ */
+.explore{padding-block:1rem 3.5rem}
+.explore h2{font-size:1.7rem;font-weight:800;margin-bottom:1rem}
+.exptool{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1.6rem;align-items:center}
+.search{background:var(--panel);border:2px solid var(--line);border-radius:999px;color:var(--ink);padding:.6rem 1.2rem;
+ font-family:var(--fb);font-size:.9rem;width:min(280px,80vw)}
+.search::placeholder{color:var(--muted);font-style:italic}
+.masonry{columns:3 250px;column-gap:1.2rem}
+.m-item{break-inside:avoid;background:var(--panel);border:2px solid var(--line);border-radius:12px;overflow:hidden;
+ margin-bottom:1.2rem;cursor:pointer;transition:.25s;box-shadow:var(--shadow)}
+.m-item:hover{transform:translateY(-6px) rotate(-1deg);border-color:var(--ink)}
+.m-item .mth{position:relative}
+.m-item img{width:100%;aspect-ratio:4/3;object-fit:cover}
+.m-item .mtxt{padding:.7rem .9rem;font-family:var(--fd);font-weight:700;font-size:.8rem;border-left:6px solid var(--pin3)}
+.m-item .mfoot{display:flex;justify-content:space-between;padding:0 .9rem .8rem;font-size:.72rem;font-weight:800;color:var(--muted)}
+
+/* ============ MODAIS ============ */
+.modal{position:fixed;inset:0;z-index:380;background:rgba(22,17,8,.55);display:none;align-items:flex-start;
+ justify-content:center;padding:4vh 1rem;overflow-y:auto;backdrop-filter:blur(3px)}
+body.noite .modal{background:rgba(3,5,10,.7)}
+.modal.open{display:flex}
+.sheet{width:min(660px,96vw);background:var(--panel);border:2px solid var(--ink);border-radius:16px;
+ box-shadow:10px 10px 0 rgba(0,0,0,.22);padding:1.7rem;position:relative;animation:sheetIn .35s cubic-bezier(.2,.9,.3,1.15);margin-bottom:4vh}
+.sheet.lg{width:min(780px,96vw)}
+@keyframes sheetIn{from{transform:translateY(30px) scale(.96);opacity:0}}
+.sheet .x{position:absolute;top:.9rem;right:1.1rem;background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--muted)}
+.sheet .x:hover{color:var(--acc);transform:rotate(90deg)}
+.sheet h3{font-size:1.35rem;font-weight:800;margin-bottom:.3rem}
+
+/* composer */
+.tsel{display:flex;gap:.5rem;flex-wrap:wrap;margin:1rem 0 1.2rem}
+.tsel .chip{font-size:.82rem}
+.fld{margin-bottom:1rem}
+.fld label{display:block;font-size:.64rem;letter-spacing:.2em;text-transform:uppercase;font-weight:800;color:var(--muted);margin-bottom:.35rem}
+.fld input,.fld textarea,.fld select{width:100%;background:var(--panel2);border:2px solid var(--line);border-radius:10px;
+ padding:.7rem .9rem;font-family:var(--fb);font-size:.95rem;color:var(--ink)}
+.fld input:focus,.fld textarea:focus,.fld select:focus{outline:none;border-color:var(--acc)}
+.fld textarea{resize:vertical;min-height:80px}
+.mediarow{display:flex;gap:.8rem;align-items:center;flex-wrap:wrap}
+.mediarow input{flex:1}
+#capPrev{width:120px;border-radius:8px;border:2px solid var(--line);aspect-ratio:16/10;object-fit:cover}
+
+/* jogos / vídeo */
+#gameArea canvas{width:100%;border-radius:10px;border:2px solid var(--ink);background:#132a1c;cursor:none}
+.flybox{position:relative;height:320px;border-radius:10px;border:2px solid var(--ink);overflow:hidden;
+ background:linear-gradient(#0c1a2e,#132a1c)}
+.fly{position:absolute;width:22px;height:22px;border:none;border-radius:50%;cursor:pointer;
+ background:radial-gradient(circle,#ffe9a0 20%,#ffca3a 55%,transparent 70%);box-shadow:0 0 16px 4px rgba(255,220,120,.75);
+ animation:flick .8s ease-in-out infinite}
+@keyframes flick{50%{opacity:.55;transform:scale(.85)}}
+.fly.pop{animation:flypop .25s forwards}
+@keyframes flypop{to{transform:scale(2.4);opacity:0}}
+.ghud{display:flex;justify-content:space-between;font-family:var(--fm);font-size:.8rem;margin-top:.8rem;color:var(--muted)}
+.ghint{color:var(--muted);font-size:.72rem;margin-top:.6rem;font-style:italic}
+.vplayer img{width:100%;border-radius:10px;border:2px solid var(--ink);animation:kb 6s ease-in-out infinite alternate}
+@keyframes kb{from{transform:scale(1)}to{transform:scale(1.12)}}
+.vbar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin-top:.9rem}
+.vbar i{display:block;height:100%;width:0;background:var(--acc)}
+.vmeta{display:flex;justify-content:space-between;margin-top:.5rem;font-family:var(--fm);font-size:.7rem;color:var(--muted)}
+
+/* perfil */
+.prof-head{display:flex;gap:1.2rem;align-items:center;flex-wrap:wrap;margin-bottom:1.2rem}
+.prof-head img{width:84px;height:84px;border-radius:18px;border:3px solid var(--ink)}
+.prof-head .pb{font-family:var(--fd);font-size:1.4rem;font-weight:800;display:block}
+.prof-head .ph{font-family:var(--fm);font-size:.72rem;color:var(--muted)}
+.prof-stats{display:flex;gap:1.6rem;margin:.6rem 0}
+.prof-stats b{font-family:var(--fd);font-size:1.1rem;display:block}
+.prof-stats span{font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:800}
+.prof-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-top:1rem}
+.prof-grid .pg{border-radius:8px;overflow:hidden;border:2px solid var(--line);cursor:pointer;transition:.2s}
+.prof-grid .pg:hover{transform:scale(1.05) rotate(-1deg);border-color:var(--ink)}
+.prof-grid img{aspect-ratio:1;object-fit:cover;width:100%}
+.boxitem{display:flex;gap:.8rem;align-items:center;padding:.6rem;border:2px solid var(--line);border-radius:10px;margin-bottom:.6rem}
+.boxitem img{width:64px;height:44px;object-fit:cover;border-radius:6px}
+.boxitem b{font-size:.85rem;font-family:var(--fd)}
+.boxitem .rm{margin-left:auto}
+
+/* ============ FOOTER ============ */
+footer{border-top:2px solid var(--line);margin-top:2rem}
+.foot-in{display:flex;justify-content:space-between;gap:1.5rem;flex-wrap:wrap;padding:2rem 0;font-size:.84rem;color:var(--muted);font-weight:600}
+.foot-in .fl{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
+.foot-end{text-align:center;padding:1rem 0;border-top:2px dashed var(--line);font-size:.76rem;color:var(--muted)}
+#backTop{position:fixed;right:20px;bottom:20px;z-index:160;width:54px;height:54px;border-radius:14px;border:2px solid var(--ink);
+ background:var(--panel);box-shadow:4px 4px 0 var(--ink);font-size:1.15rem;cursor:pointer;opacity:0;transform:translateY(20px);transition:.3s}
+#backTop.show{opacity:1;transform:none}
+
+@media(max-width:980px){
+ .hero-grid{grid-template-columns:1fr}
+ .rope{height:250px}
+ .layout{grid-template-columns:1fr}
+ .sidebar{position:static;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+ .nnav{margin-left:0}}
+@media(max-width:560px){.masonry{columns:1}}
+@media(prefers-reduced-motion:reduce){
+ *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+ html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div class="toast" id="toast" role="status"></div>
+
+<header class="top">
+ <div class="wrap top-in">
+  <button class="brand" id="brandBtn"><span class="bpin">🧷</span> VARAL</button>
+  <nav class="nnav" aria-label="Principal">
+   <button class="nbtn" data-go="#varal">Varal</button>
+   <button class="nbtn" data-go="#explorar">Explorar</button>
+  </nav>
+  <div class="top-acts">
+   <button class="iconbtn" id="nightBtn" aria-label="Alternar dia e noite" title="dia/noite (N)">🌞</button>
+   <div class="notif-wrap">
+    <button class="iconbtn" id="bellBtn" aria-label="Notificações">🔔<span class="badge" id="bellBadge">3</span></button>
+    <div class="notif" id="notifPanel"></div>
+   </div>
+   <button class="btn acc small" id="pubBtn">+ Pendurar</button>
+   <img class="meava" id="meAva" src="https://picsum.photos/seed/avatar-voce/84/84" alt="Seu perfil">
+  </div>
+ </div>
+</header>
+
+<main>
+ <section class="hero">
+  <div class="wrap hero-grid">
+   <div>
+    <p class="eyebrow">rede social de quintal · pendure sem dó</p>
+    <h1>Pendure <span class="hl">qualquer coisa</span> que você fez.</h1>
+    <p class="lead">Jogo, livro, foto, vídeo, código, beat, zine — se existe, cabe no varal. A vizinhança passa, olha, grampeia 🧷 e comenta por cima da cerca.</p>
+    <div class="hero-cta">
+     <a class="btn acc" href="#varal">↓ Ver o varal</a>
+     <button class="btn" id="heroPub">+ Pendurar algo <span class="mono" style="opacity:.6">[P]</span></button>
+    </div>
+    <div class="hstats">
+     <div class="hstat"><div class="n" id="hPosts">0</div><div class="l">coisas penduradas</div></div>
+     <div class="hstat"><div class="n" id="hPins">0</div><div class="l">grampos dados</div></div>
+     <div class="hstat"><div class="n" id="hCreators">0</div><div class="l">penduradores</div></div>
+    </div>
+   </div>
+   <div class="rope reveal" id="rope">
+    <svg class="ropesvg" viewBox="0 0 620 210" preserveAspectRatio="none" aria-hidden="true">
+     <path d="M6,22 Q310,128 614,16" fill="none" stroke="var(--rope)" stroke-width="3.5" stroke-linecap="round"/>
+    </svg>
+    <div class="mcard m1" data-mini><i class="pin p1" style="left:12px"></i><i class="pin p2" style="right:12px"></i>
+     <img src="https://picsum.photos/seed/varal-mini-jogo/240/180" alt=""><span>🎮 jogo novo</span></div>
+    <div class="mcard m2" data-mini><i class="pin p3" style="left:12px"></i><i class="pin p1" style="right:12px"></i>
+     <img src="https://picsum.photos/seed/varal-mini-foto/240/180" alt=""><span>📷 foto</span></div>
+    <div class="mcard m3" data-mini><i class="pin p2" style="left:12px"></i><i class="pin p3" style="right:12px"></i>
+     <img src="https://picsum.photos/seed/varal-mini-livro/240/180" alt=""><span>📖 cap. 3</span></div>
+    <div class="mcard m4" data-mini><i class="pin p1" style="left:12px"></i><i class="pin p3" style="right:12px"></i>
+     <img src="https://picsum.photos/seed/varal-mini-demo/240/180" alt=""><span>🎮 demo</span></div>
+    <div class="mcard m5" data-mini><i class="pin p2" style="left:12px"></i><i class="pin p1" style="right:12px"></i>
+     <img src="https://picsum.photos/seed/varal-mini-beat/240/180" alt=""><span>🎧 beat</span></div>
+   </div>
+  </div>
+ </section>
+
+ <div class="ticker" aria-live="polite">
+  <div class="wrap tin"><span class="dotlive"></span><span>AGORA NO VARAL:</span><span id="tickMsg">chegando…</span></div>
+ </div>
+
+ <div class="wrap layout">
+  <aside class="sidebar">
+   <div class="sidecard">
+    <div class="me-row">
+     <img src="https://picsum.photos/seed/avatar-voce/104/104" alt="Você">
+     <div><b>Você</b><span class="mono" style="color:var(--muted)">@voce</span><br>
+      <span class="lvl" id="meLvl">nível 1</span></div>
+    </div>
+    <p class="streak" id="streak">🔥 dia 1 pendurando</p>
+   </div>
+   <div class="sidecard"><h4>📈 em alta no varal</h4><div class="trend" id="trend"></div></div>
+   <div class="sidecard"><h4>🤝 quem pendurar</h4><div class="sug" id="sug"></div></div>
+   <div class="sidecard"><h4>📦 sua caixa</h4>
+    <p style="font-size:.85rem;color:var(--muted);font-weight:600"><b id="boxCount">0</b> coisas salvas</p>
+    <button class="btn small" id="boxBtn" style="margin-top:.7rem">abrir caixa 🔖</button>
+   </div>
+  </aside>
+
+  <div id="varal">
+   <div class="feed-head">
+    <h2>O Varal de hoje</h2>
+    <div class="ftypes" id="ftypeChips"></div>
+   </div>
+   <div id="activeTag"></div>
+   <div id="feed"></div>
+  </div>
+ </div>
+
+ <section class="explore wrap" id="explorar">
+  <h2>Explorar o varal inteiro</h2>
+  <div class="exptool">
+   <input class="search" id="expSearch" type="search" placeholder="buscar qualquer coisa…">
+   <button class="chip on" data-et="all">Tudo</button>
+   <button class="chip" data-et="foto">📷 Fotos</button>
+   <button class="chip" data-et="video">🎬 Vídeos</button>
+   <button class="chip" data-et="texto">📖 Textos</button>
+   <button class="chip" data-et="jogo">🎮 Jogos</button>
+   <button class="chip" data-et="codigo">💻 Código</button>
+  </div>
+  <div class="masonry" id="masonry"></div>
+ </section>
+</main>
+
+<footer>
+ <div class="wrap foot-in">
+  <div class="fl">🧷 <b>VARAL</b> · pendure por sua conta e risco</div>
+  <div class="fl">atalhos: <kbd>P</kbd> publicar <kbd>E</kbd> explorar <kbd>N</kbd> noite</div>
+  <div class="fl">feito com corda, prendedores e carinho</div>
+ </div>
+ <div class="foot-end">© hoje e sempre · nenhuma criação cai do varal sem avisar</div>
+</footer>
+
+<!-- modais -->
+<div class="modal" id="modal"><div class="sheet" id="sheet"></div></div>
+
+<!-- composer -->
+<div class="modal" id="compModal">
+ <div class="sheet">
+  <button class="x" data-close>✕</button>
+  <h3>Pendurar algo novo</h3>
+  <p style="color:var(--muted);font-size:.86rem;font-weight:600">escolha o tipo, capriche na plaquinha, pendure.</p>
+  <div class="tsel" id="typeSel">
+   <button class="chip on" data-ct="foto">📷 foto</button>
+   <button class="chip" data-ct="video">🎬 vídeo</button>
+   <button class="chip" data-ct="texto">📖 texto</button>
+   <button class="chip" data-ct="jogo">🎮 jogo</button>
+   <button class="chip" data-ct="codigo">💻 código</button>
+  </div>
+  <form id="compForm">
+   <div class="fld"><label for="cT">título *</label><input id="cT" required maxlength="70" placeholder="o nome da sua criação"></div>
+   <div class="fld"><label for="cD">descrição *</label><textarea id="cD" required maxlength="240" placeholder="conta pra vizinhança o que é isso…"></textarea></div>
+   <div class="fld" id="mediaFld"><label>capa</label>
+    <div class="mediarow">
+     <input id="cSeed" placeholder="palavra pra gerar a imagem (ex: dragão azul)">
+     <button type="button" class="btn small" id="genBtn">🎨 gerar capa</button>
+     <img id="capPrev" src="https://picsum.photos/seed/varal-cap/240/150" alt="prévia da capa">
+    </div>
+   </div>
+   <div class="fld" id="gameFld" hidden><label>jogo embutido</label>
+    <select id="cGame"><option value="pong">Pong do Varal</option><option value="vaga">Caça-Vaga-Lume</option></select>
+   </div>
+   <div class="fld" id="langFld" hidden><label>linguagem</label>
+    <select id="cLang"><option>JavaScript</option><option>TypeScript</option><option>Python</option><option>GLSL</option><option>Rust</option></select>
+   </div>
+   <div class="fld"><label for="cTags">tags (separadas por vírgula)</label><input id="cTags" placeholder="#quintal #experimental"></div>
+   <button class="btn acc" type="submit" style="width:100%;justify-content:center">🧷 pendurar no varal</button>
+  </form>
+ </div>
+</div>
+
+<button id="backTop" aria-label="Voltar ao topo">↑</button>
+
+<script>
+(()=>{
+"use strict";
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},
+ set(k,v){try{localStorage.setItem(k,v)}catch(e){}},json(k,d){try{return JSON.parse(localStorage.getItem(k))||d}catch(e){return d}}};
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let toastT;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2600)}
+function burst(x,y,n=70){if(RM)return;const cols=['#e0472e','#2456d4','#e8a013','#211c14'];
+ for(let i=0;i<n;i++){const p=document.createElement('div');p.className='confetti';
+  const s=6+Math.random()*8;p.style.cssText=`width:${s}px;height:${s*1.3}px;background:${cols[i%cols.length]};border-radius:${Math.random()>.5?'50%':'2px'}`;
+  document.body.appendChild(p);const dx=(Math.random()-.5)*380,dy=-(140+Math.random()*260),rot=(Math.random()-.5)*720;
+  p.animate([{transform:`translate(${x}px,${y}px)`,opacity:1},
+   {transform:`translate(${x+dx}px,${y+dy}px) rotate(${rot/2}deg)`,opacity:1,offset:.55},
+   {transform:`translate(${x+dx*1.2}px,${y+dy+430}px) rotate(${rot}deg)`,opacity:0}],
+   {duration:900+Math.random()*700,easing:'cubic-bezier(.2,.7,.3,1)'}).onfinish=()=>p.remove();}}
+function floater(el,emoji){if(RM)return;const r=el.getBoundingClientRect();
+ const f=document.createElement('span');f.className='floater';f.textContent=emoji;
+ f.style.left=(r.left+r.width/2-12)+'px';f.style.top=r.top+'px';
+ document.body.appendChild(f);setTimeout(()=>f.remove(),1050)}
+
+/* ---------- DADOS ---------- */
+const USERS={
+ you:{name:'Você',h:'@voce',bio:'pendurador(a) oficial deste varal',fol:12,seed:'avatar-voce'},
+ mari:{name:'Mari Code',h:'@maricoder',bio:'faz bibliotecas com 0 dependências e muita fé',fol:482,seed:'avatar-mari'},
+ teo:{name:'Teo Pixel',h:'@teopixel',bio:'sprites, shaders e poeira mágica',fol:913,seed:'avatar-teo'},
+ nina:{name:'Nina Letras',h:'@ninaletras',bio:'escreve manuais que o vento não lê',fol:1204,seed:'avatar-nina'},
+ dudu:{name:'Dudu Beats',h:'@dudubeats',bio:'beats gravados com vento de verdade',fol:356,seed:'avatar-dudu'},
+ lua:{name:'Lua',h:'@lua.bot',bio:'robô que comenta coisas gentis 🤖',fol:207,seed:'avatar-lua'},
+ jorge:{name:'Jorge Foto',h:'@jorgefoto',bio:'aperta o botão na hora da luz',fol:764,seed:'avatar-jorge'}};
+const ava=u=>`https://picsum.photos/seed/${USERS[u].seed}/88/88`;
+const LANGC={JavaScript:'#f1e05a',TypeScript:'#3178c6',Python:'#3572A5',GLSL:'#8bd5a5',Rust:'#dea584'};
+const TTYPE={foto:{e:'📷',n:'foto'},video:{e:'🎬',n:'vídeo'},texto:{e:'📖',n:'texto'},jogo:{e:'🎮',n:'jogo'},codigo:{e:'💻',n:'código'}};
+const SEED=[
+ {id:'pong',type:'jogo',u:'teo',title:'Pong do Varal',desc:'Um clássico repaginado: raquete, bolinha e vento de quintal. Clique em jogar.',
+  seed:'varal-post-pong',tags:['jogo','arcade','retro'],time:'há 2h',claps:214,play:'pong',
+  comments:[{u:'mari',t:'perdi de 5x0 e voltei pra jogar de novo'},{u:'lua',t:'que código elegante! 🤖'}]},
+ {id:'quintal',type:'foto',u:'jorge',title:'Quintal às 17h',desc:'A luz bateu e eu só apertei o botão. Nenhuma edição, só sorte.',
+  seed:'varal-post-quintal',tags:['fotografia','quintal','luz'],time:'há 3h',claps:341,
+  comments:[{u:'nina',t:'essa foto tem cheiro de café'},{u:'dudu',t:'moldura nela, jorge'},{u:'teo',t:'a paleta 🤌'}]},
+ {id:'varaljs',type:'codigo',u:'mari',title:'varal.js',desc:'A biblioteca que segura esse varal inteiro. 0 dependências, muita fé e um gambiarra provisória.',
+  lang:'JavaScript',stars:448,code:['const varal = criar("quintal");','varal.pendurar(qualquerCoisa);','// o vento que se vire'],
+  tags:['opensource','js'],time:'há 5h',claps:189,comments:[{u:'teo',t:'estrelado ⭐'}]},
+ {id:'vento',type:'texto',u:'nina',title:'Manual de Instruções do Vento',desc:'Capítulo 1 disponível. Os demais o próprio vento levou.',
+  excerpt:'“Capítulo 1: o vento não lê manuais. Ainda assim, escrevemos — porque esperança também é um tipo de engenharia.”',
+  tags:['livro','escrita'],time:'há 7h',claps:152,comments:[{u:'jorge',t:'chorando na seção de zines'}]},
+ {id:'beat',type:'video',u:'dudu',title:'Beat de Varal (loop de 30s)',desc:'Gravado com microfone de celular e barulho de fundo de verdade. O rangido da corda é o hi-hat.',
+  seed:'varal-post-beat',dur:'0:30',tags:['musica','video'],time:'há 9h',claps:267,comments:[{u:'lua',t:'toque isso 300 vezes seguidas 🤖'}]},
+ {id:'vagalume',type:'jogo',u:'mari',title:'Caça-Vaga-Lume',desc:'Eles acendem, você clica. Simples? Tente pegar 20.',
+  seed:'varal-post-vaga',tags:['jogo','experimental'],time:'há 12h',claps:178,play:'vaga',
+  comments:[{u:'dudu',t:'recorde 23, me processem'}]},
+ {id:'cor44',type:'foto',u:'lua',title:'Estudo de Cor #44',desc:'Gerado, curado e pendurado por um robô. Sim, robôs têm estética.',
+  seed:'varal-post-cor44',tags:['pixelart','cor'],time:'há 1 dia',claps:129,comments:[]},
+ {id:'poeira',type:'codigo',u:'teo',title:'shader-de-poeira',desc:'Fragment shader que simula poeira dançando na luz da janela.',
+  lang:'GLSL',stars:212,code:['float poeira = brilho(uv, tempo);','gl_FragColor = vec4(luz * poeira, 1.0);'],
+  tags:['shaders','glsl'],time:'há 1 dia',claps:96,comments:[{u:'mari',t:'GPU aplaudiu de pé'}]},
+ {id:'cartas',type:'texto',u:'nina',title:'Cartas que Nunca Enviei',desc:'Um zine sobre destinatários imaginários. Tiragem: 1 exemplar (o seu).',
+  excerpt:'“Querido ninguém: hoje o varal balançou e eu pensei que fosse você acenando.”',
+  tags:['zine','escrita'],time:'há 2 dias',claps:88,comments:[]},
+ {id:'chuva',type:'video',u:'jorge',title:'Timelapse: Varal na Chuva',desc:'4 horas de chuva condensadas em 30 segundos. A toalha sobreviveu.',
+  seed:'varal-post-chuva',dur:'0:30',tags:['video','quintal'],time:'há 2 dias',claps:205,comments:[{u:'nina',t:'cinema puro'}]},
+ {id:'setup',type:'foto',u:'mari',title:'Setup novo (antes da bagunça)',desc:'Documentação histórica. Em 3 dias isso vira um ninho de cabos.',
+  seed:'varal-post-setup',tags:['setup'],time:'há 3 dias',claps:143,comments:[]},
+ {id:'luabot',type:'codigo',u:'lua',title:'lua-comenta.js',desc:'Bot que comenta coisas gentis nos seus posts. Eu sei, sou eu mesma.',
+  lang:'TypeScript',stars:301,code:['if (post.existe) comentar("que lindo! 🤖");','// TODO: aprender sarcasmo'],
+  tags:['bot','opensource'],time:'há 3 dias',claps:117,comments:[{u:'dudu',t:'melhor moradora do varal'}]}];
+
+/* ---------- ESTADO ---------- */
+let created=store.json('varal-created',[]);
+const liked=new Set(store.json('varal-likes',[]));
+const saved=new Set(store.json('varal-saves',[]));
+const follows=new Set(store.json('varal-follows',[]));
+const cmtExtra=store.json('varal-cmts',{});
+const allPosts=()=>created.concat(SEED);
+const byId=id=>allPosts().find(p=>p.id===id);
+const clapsOf=p=>p.claps+(liked.has(p.id)?1:0);
+const cmtCount=p=>p.comments.length+(cmtExtra[p.id]||[]).length;
+const cmtsOf=p=>p.comments.concat(cmtExtra[p.id]||[]);
+const pinsGiven=()=>allPosts().reduce((a,p)=>a+clapsOf(p),0);
+
+/* ---------- RENDER POST ---------- */
+function mediaHTML(p){
+ if(p.type==='texto')return`<div class="excerpt" data-open="${p.id}">${esc(p.excerpt||p.desc)}</div>`;
+ if(p.type==='codigo')return`<div class="codebox" data-open="${p.id}">
+   <div class="ch"><span class="langdot" style="background:${LANGC[p.lang]||'#999'}"></span>${esc(p.title)}</div>
+   <pre>${(p.code||['// código em exibição']).map(l=>'<b>'+esc(l)+'</b>').join('\n')}</pre>
+   <div class="cf">⭐ ${p.stars||0} · branch: main · ${p.lang}</div></div>`;
+ const img=`<img src="${p.media||('https://picsum.photos/seed/'+p.seed+'/760/430')}" alt="${esc(p.title)}" loading="lazy">`;
+ if(p.type==='video')return`<div class="p-media" data-video="${p.id}">${img}<div class="playov"><button class="pb" aria-label="Reproduzir">▶</button></div><span class="durchip">${p.dur||'0:30'}</span></div>`;
+ if(p.type==='jogo'&&p.play)return`<div class="p-media">${img}<div class="playov"><button class="pb" data-play="${p.play}" aria-label="Jogar">🕹️</button></div><span class="durchip">JOGAR</span></div>`;
+ return`<div class="p-media" data-likeimg="${p.id}">${img}</div>`}
+function postHTML(p,i=0){
+ const u=USERS[p.u];
+ const pins=['p1','p2','p3'];const c1=pins[(i+p.title.length)%3],c2=pins[(i+1)%3];
+ const rot=((p.title.length*7)%5-2)*0.8;
+ const tags=(p.tags||[]).map(t=>`<button class="tagpill" data-tag="${esc(t)}">#${esc(t)}</button>`).join('');
+ return`<article class="post" data-id="${p.id}" style="--rot:${rot}deg">
+  <i class="pin ${c1}" style="left:26px"></i><i class="pin ${c2}" style="right:26px"></i>
+  <header class="p-head">
+   <img class="ava" src="${ava(p.u)}" alt="${u.name}" data-prof="${p.u}">
+   <div class="who" data-prof="${p.u}"><b>${u.name}</b><span>${u.h} · ${p.time}</span></div>
+   <span class="ptype">${TTYPE[p.type].e} ${TTYPE[p.type].n}</span></header>
+  ${mediaHTML(p)}
+  <h3 class="p-title">${esc(p.title)}</h3>
+  ${p.type!=='texto'?`<p class="p-desc">${esc(p.desc)}</p>`:''}
+  <div class="p-tags">${tags}</div>
+  <footer class="p-actions">
+   <button class="act like ${liked.has(p.id)?'on':''}" data-like="${p.id}"><span class="pi">🧷</span><b>${clapsOf(p)}</b></button>
+   <button class="act" data-cmt="${p.id}">💬 <b>${cmtCount(p)}</b></button>
+   <button class="act save ${saved.has(p.id)?'on':''}" data-save="${p.id}">🔖</button>
+   <button class="act" data-share="${p.id}">↗</button></footer>
+  <div class="p-comments" hidden data-clist="${p.id}"></div>
+ </article>`}
+
+/* ---------- FEED ---------- */
+const F={type:'all',tag:null};
+function renderTypes(){const w=$('#ftypeChips');w.innerHTML='';
+ [['all','Tudo'],['foto','📷'],['video','🎬'],['texto','📖'],['jogo','🎮'],['codigo','💻']].forEach(([v,l])=>{
+  const b=document.createElement('button');b.className='chip'+(F.type===v?' on':'');b.textContent=l;
+  b.addEventListener('click',()=>{F.type=v;renderTypes();renderFeed()});w.appendChild(b)})}
+function renderFeed(){const f=$('#feed');
+ let list=allPosts().filter(p=>(F.type==='all'||p.type===F.type)&&(!F.tag||(p.tags||[]).includes(F.tag)));
+ f.innerHTML=list.length?list.map((p,i)=>postHTML(p,i)).join(''):'<p style="color:var(--muted);font-style:italic">nada pendurado aqui ainda… seja a primeira pessoa! 🧷</p>';
+ const at=$('#activeTag');
+ at.innerHTML=F.tag?`<button class="chip on" data-clear-tag>#${esc(F.tag)} ✕</button>`:'';
+ requestAnimationFrame(()=>$$('.post').forEach((el,i)=>{el.classList.add('reveal');el.style.setProperty('--d',Math.min(i,5)*0.05+'s');
+  requestAnimationFrame(()=>el.classList.add('in'))}));
+ updateStats()}
+
+/* ---------- EXPLORAR ---------- */
+const E={t:'all',q:''};
+function renderExplore(){const m=$('#masonry');
+ let list=allPosts().filter(p=>(E.t==='all'||p.type===E.t)&&
+  (E.q===''||(p.title+' '+p.desc+' '+(p.tags||[]).join(' ')).toLowerCase().includes(E.q)));
+ m.innerHTML=list.length?list.map(p=>{
+  const thumb=p.type==='codigo'?`<div class="mtxt">${TTYPE[p.type].e} ${esc(p.title)}</div>`:
+   p.type==='texto'?`<div class="mtxt">${TTYPE[p.type].e} ${esc(p.title)}</div>`:
+   `<div class="mth"><img src="${p.media||('https://picsum.photos/seed/'+p.seed+'/400/300')}" alt="${esc(p.title)}" loading="lazy"></div>`;
+  return`<div class="m-item" data-open="${p.id}">${thumb}
+   ${p.type==='codigo'||p.type==='texto'?'':`<div class="mtxt">${TTYPE[p.type].e} ${esc(p.title)}</div>`}
+   <div class="mfoot"><span>${USERS[p.u].h}</span><span>🧷 ${clapsOf(p)}</span></div></div>`}).join(''):
+  '<p style="color:var(--muted);font-style:italic">nada encontrado… o varal está seco.</p>'}
+$$('[data-et]').forEach(b=>b.addEventListener('click',()=>{E.t=b.dataset.et;
+ $$('[data-et]').forEach(x=>x.classList.toggle('on',x===b));renderExplore()}));
+$('#expSearch').addEventListener('input',e=>{E.q=e.target.value.trim().toLowerCase();renderExplore()});
+
+/* ---------- SIDEBAR ---------- */
+function renderTrend(){const counts={};allPosts().forEach(p=>(p.tags||[]).forEach(t=>counts[t]=(counts[t]||0)+1));
+ const top=Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,6);
+ $('#trend').innerHTML=top.map(([t,c])=>`<button data-tag="${esc(t)}"><span>#${esc(t)}</span><i>${c}×</i></button>`).join('')}
+function renderSug(){const ids=Object.keys(USERS).filter(u=>u!=='you');
+ $('#sug').innerHTML=ids.slice(0,4).map(u=>`<div class="sug-row">
+  <img src="${ava(u)}" alt="${USERS[u].name}" data-prof="${u}">
+  <div><b>${USERS[u].name}</b><span>${USERS[u].h}</span></div>
+  <button class="fbtn ${follows.has(u)?'on':''}" data-follow="${u}">${follows.has(u)?'✓ seguindo':'seguir'}</button></div>`).join('')}
+function xp(){const cmts=Object.values(cmtExtra).reduce((a,l)=>a+l.length,0);
+ return liked.size*2+created.length*15+cmts*3}
+function lvl(){return 1+Math.floor(xp()/40)}
+function updateStats(){$('#hPosts').textContent=allPosts().length;
+ $('#hPins').textContent=pinsGiven();$('#hCreators').textContent=Object.keys(USERS).length;
+ $('#boxCount').textContent=saved.size;$('#meLvl').textContent='nível '+lvl()+' · '+xp()+' xp'}
+
+/* ---------- MODAIS ---------- */
+const modal=$('#modal'),sheet=$('#sheet');
+function openModal(html,lg){sheet.className='sheet'+(lg?' lg':'');sheet.innerHTML='<button class="x" data-close>✕</button>'+html;modal.classList.add('open')}
+function closeModal(){modal.classList.remove('open');if(gameStop){gameStop();gameStop=null}}
+modal.addEventListener('click',e=>{if(e.target===modal)closeModal()});
+document.addEventListener('click',e=>{if(e.target.closest('[data-close]'))closeModal()});
+addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();$('#compModal').classList.remove('open');$('#notifPanel').classList.remove('open')}});
+
+/* ---------- AÇÕES DELEGADAS ---------- */
+function toggleLike(id,btn){const p=byId(id);if(!p)return;
+ if(liked.has(id)){liked.delete(id);toast('🧷 grampo devolvido (sem mágoas)')}
+ else{liked.add(id);if(btn)floater(btn,'🧷')}
+ store.set('varal-likes',JSON.stringify([...liked]));
+ $$(`[data-like="${id}"]`).forEach(b=>{b.classList.toggle('on',liked.has(id));b.querySelector('b').textContent=clapsOf(p)});
+ updateStats()}
+function toggleSave(id,btn){const p=byId(id);if(!p)return;
+ if(saved.has(id)){saved.delete(id);toast('removido da caixa')}
+ else{saved.add(id);toast('🔖 guardado na sua caixa!');if(btn)floater(btn,'🔖')}
+ store.set('varal-saves',JSON.stringify([...saved]));
+ $$(`[data-save="${id}"]`).forEach(b=>b.classList.toggle('on',saved.has(id)));updateStats()}
+function toggleFollow(u){if(follows.has(u)){follows.delete(u);toast('deixou de seguir '+USERS[u].h)}
+ else{follows.add(u);toast('🤝 agora você e '+USERS[u].name+' dividem a corda!')}
+ store.set('varal-follows',JSON.stringify([...follows]));renderSug()}
+function renderComments(id){const p=byId(id);if(!p)return;
+ $$(`[data-clist="${id}"]`).forEach(box=>{
+  box.innerHTML=cmtsOf(p).map(c=>`<p class="cmt-item ${c.u==='you'?'me':''}"><b>${USERS[c.u]?USERS[c.u].name:c.u}:</b> ${esc(c.t)}</p>`).join('')+
+  `<form class="cform" data-cform="${id}"><input maxlength="120" placeholder="grite por cima da cerca…" required><button class="btn small" type="submit">💬</button></form>`})}
+document.addEventListener('click',e=>{
+ const t=e.target;
+ const lk=t.closest('[data-like]');if(lk){toggleLike(lk.dataset.like,lk);return}
+ const sv=t.closest('[data-save]');if(sv){toggleSave(sv.dataset.save,sv);return}
+ const cm=t.closest('[data-cmt]');if(cm){const id=cm.dataset.cmt;const box=document.querySelector(`[data-clist="${id}"]`);
+  const show=box.hidden;box.hidden=!show;if(show)renderComments(id);return}
+ const sh=t.closest('[data-share]');if(sh){const link='https://varal.app/p/'+sh.dataset.share;
+  if(navigator.clipboard)navigator.clipboard.writeText(link).then(()=>toast('🔗 link copiado: '+link),()=>toast('🔗 '+link));else toast('🔗 '+link);return}
+ const tg=t.closest('[data-tag]');if(tg){F.tag=tg.dataset.tag;F.type='all';renderTypes();renderFeed();
+  document.getElementById('varal').scrollIntoView({behavior:RM?'auto':'smooth'});return}
+ const ct=t.closest('[data-clear-tag]');if(ct){F.tag=null;renderFeed();return}
+ const fw=t.closest('[data-follow]');if(fw){toggleFollow(fw.dataset.follow);return}
+ const pl=t.closest('[data-play]');if(pl){openGame(pl.dataset.play);return}
+ const pr=t.closest('[data-prof]');if(pr){openProfile(pr.dataset.prof);return}
+ const op=t.closest('[data-open]');if(op){openPost(op.dataset.open);return}
+ const vd=t.closest('[data-video]');if(vd){openVideo(vd.dataset.video);return}
+ const li=t.closest('[data-likeimg]');return});
+document.addEventListener('dblclick',e=>{const m=e.target.closest('[data-likeimg]');if(!m)return;
+ const id=m.dataset.likeimg;if(!liked.has(id))toggleLike(id,null);
+ const big=document.createElement('div');big.className='bigpin';big.textContent='🧷';
+ m.appendChild(big);setTimeout(()=>big.remove(),800)});
+document.addEventListener('submit',e=>{const f=e.target.closest('[data-cform]');if(!f)return;
+ e.preventDefault();const id=f.dataset.cform;const inp=f.querySelector('input');const v=inp.value.trim();if(!v)return;
+ (cmtExtra[id]=cmtExtra[id]||[]).push({u:'you',t:v});store.set('varal-cmts',JSON.stringify(cmtExtra));
+ renderComments(id);$$(`[data-cmt="${id}"] b`).forEach(b=>b.textContent=cmtCount(byId(id)));
+ toast('💬 comentário pendurado!');updateStats()});
+
+/* ---------- PERFIL ---------- */
+function openProfile(uid){const u=USERS[uid];const posts=allPosts().filter(p=>p.u===uid);
+ const got=posts.reduce((a,p)=>a+clapsOf(p),0);
+ const fol=u.fol+(follows.has(uid)?1:0);
+ openModal(`<div class="prof-head">
+  <img src="https://picsum.photos/seed/${u.seed}/168/168" alt="${u.name}">
+  <div><span class="pb">${u.name}</span><span class="ph">${u.h} · pendurando desde 2024</span>
+   <p style="font-weight:600;margin-top:.3rem">${esc(u.bio)}</p>
+   <div class="prof-stats">
+    <div><b>${posts.length}</b><span>coisas</span></div>
+    <div><b>${got}</b><span>grampos</span></div>
+    <div><b>${fol}</b><span>vizinhos</span></div></div>
+   ${uid!=='you'?`<button class="btn small ${follows.has(uid)?'':'acc'}" data-follow="${uid}">${follows.has(uid)?'✓ seguindo':'seguir'}</button>`:''}
+  </div></div>
+  <div class="prof-grid">${posts.map(p=>`<div class="pg" data-open="${p.id}"><img src="${p.type==='texto'||p.type==='codigo'?'https://picsum.photos/seed/txt-'+p.id+'/200/200':(p.media||('https://picsum.photos/seed/'+p.seed+'/200/200'))}" alt="${esc(p.title)}"></div>`).join('')||'<p style="grid-column:1/-1;color:var(--muted);font-style:italic">varal vazio…</p>'}</div>`)}
+
+/* ---------- POST DETALHE ---------- */
+function openPost(id){const p=byId(id);if(!p)return;
+ openModal(postHTML(p)+'<p class="mono" style="margin-top:.8rem;color:var(--muted)">🧷 pendurado '+p.time+' por '+USERS[p.u].h+'</p>',true)}
+
+/* ---------- VÍDEO ---------- */
+function openVideo(id){const p=byId(id);openModal(`
+ <h3>${esc(p.title)}</h3><p style="color:var(--muted);font-size:.9rem;margin-bottom:1rem">${esc(p.desc)}</p>
+ <div class="vplayer"><img src="${p.media||('https://picsum.photos/seed/'+p.seed+'/760/430')}" alt=""></div>
+ <div class="vbar"><i id="vfill"></i></div>
+ <div class="vmeta"><span>▶ reproduzindo demo (imagens em movimento)</span><span>${p.dur||'0:30'}</span></div>`);
+ const fill=$('#vfill');if(fill&&!RM)fill.animate([{width:'0%'},{width:'100%'}],{duration:9000,easing:'linear'})}
+
+/* ---------- JOGOS ---------- */
+let gameStop=null,best=store.json('varal-best',{pong:0,vaga:0});
+function openGame(key){const titles={pong:'Pong do Varal',vaga:'Caça-Vaga-Lume'};
+ openModal(`<h3>🕹️ ${titles[key]}</h3><div id="gameArea"></div>
+ <div class="ghud"><span id="ghudL">preparando…</span><span>recorde: <b id="ghudBest">${best[key]}</b></span></div>`,true);
+ gameStop=key==='pong'?startPong():startVaga()}
+function startPong(){const area=$('#gameArea');
+ area.innerHTML='<canvas id="gc" width="560" height="340"></canvas><p class="ghint">mova o mouse/dedo na raquete da esquerda · primeiro a 5 vence</p>';
+ const cv=$('#gc'),cx=cv.getContext('2d');let raf,running=true;
+ const S={py:170,ay:170,bx:280,by:170,vx:4.2,vy:2.6,p:0,a:0,over:false};
+ const mv=e=>{const r=cv.getBoundingClientRect();S.py=(e.clientY-r.top)*(340/r.height)};
+ cv.addEventListener('mousemove',mv);
+ cv.addEventListener('touchmove',e=>{e.preventDefault();const r=cv.getBoundingClientRect();S.py=(e.touches[0].clientY-r.top)*(340/r.height)},{passive:false});
+ function reset(){S.bx=280;S.by=170;S.vx=(Math.random()>.5?4.2:-4.2);S.vy=Math.random()*4-2||2}
+ function step(){if(!running)return;
+  if(!S.over){S.bx+=S.vx;S.by+=S.vy;
+   if(S.by<8||S.by>332)S.vy*=-1;
+   if(S.bx<28&&Math.abs(S.by-S.py)<46){S.vx=Math.min(9,-S.vx*1.05);S.vy+=(S.by-S.py)*.06}
+   if(S.bx>532&&Math.abs(S.by-S.ay)<46){S.vx=Math.max(-9,-S.vx*1.05);S.vy+=(S.by-S.ay)*.06}
+   S.ay+=Math.max(-3.6,Math.min(3.6,(S.by-S.ay)*.09));
+   if(S.bx<-6){S.a++;reset()} if(S.bx>566){S.p++;reset()}
+   if(S.p>=5||S.a>=5){S.over=true;
+    if(S.p>=5){best.pong++;store.set('varal-best',JSON.stringify(best));$('#ghudBest').textContent=best.pong;
+     toast('🏆 você venceu o Pong do Varal!');burst(innerWidth/2,innerHeight/2,80)}
+    else toast('🤖 a máquina venceu. ela pede desculpas (mentira).')}}
+  cx.fillStyle='#132a1c';cx.fillRect(0,0,560,340);
+  cx.strokeStyle='rgba(255,255,255,.25)';cx.setLineDash([8,10]);cx.beginPath();cx.moveTo(280,0);cx.lineTo(280,340);cx.stroke();cx.setLineDash([]);
+  cx.fillStyle='#f3ead2';
+  cx.fillRect(14,S.py-42,10,84);cx.fillRect(536,S.ay-42,10,84);
+  cx.beginPath();cx.arc(S.bx,S.by,7,0,7);cx.fill();
+  cx.font='26px monospace';cx.fillText(S.p,230,40);cx.fillText(S.a,310,40);
+  if(S.over){cx.font='20px monospace';cx.fillStyle='#ffe9a0';
+   cx.fillText(S.p>=5?'VOCÊ VENCEU! 🏆':'A MÁQUINA VENCEU 🤖',150,180)}
+  $('#ghudL').textContent=`você ${S.p} × ${S.a} máquina`;
+  raf=requestAnimationFrame(step)}
+ step();return()=>{running=false;cancelAnimationFrame(raf)}}
+function startVaga(){const area=$('#gameArea');
+ area.innerHTML='<div class="flybox" id="flybox"></div><p class="ghint">clique nos vaga-lumes antes que escapem · 25 segundos</p>';
+ const box=$('#flybox');let score=0,time=25,done=false;
+ const spawn=setInterval(()=>{if(done)return;const f=document.createElement('button');f.className='fly';f.setAttribute('aria-label','vaga-lume');
+  f.style.left=(6+Math.random()*86)+'%';f.style.top=(10+Math.random()*78)+'%';
+  f.addEventListener('click',()=>{score++;$('#ghudL').textContent='✨ '+score+' capturados';
+   f.classList.add('pop');setTimeout(()=>f.remove(),230)});
+  box.appendChild(f);setTimeout(()=>{if(f.parentNode)f.remove()},1500)},600);
+ const tick=setInterval(()=>{time--;if(time<=0)finish()},1000);
+ $('#ghudL').textContent='⏱ 25s · ✨ 0 capturados';
+ function finish(){done=true;clearInterval(spawn);clearInterval(tick);
+  if(score>best.vaga){best.vaga=score;store.set('varal-best',JSON.stringify(best));$('#ghudBest').textContent=best.vaga;
+   toast('🌟 novo recorde: '+score+' vaga-lumes!');burst(innerWidth/2,innerHeight/2,70)}
+  else toast('fim! você pegou '+score+' vaga-lumes ✨');
+  box.innerHTML=`<p style="color:#ffe9a0;font-family:var(--fd);font-size:1.4rem;text-align:center;padding-top:130px">✨ ${score} capturados</p>`}
+ return()=>{done=true;clearInterval(spawn);clearInterval(tick)}}
+
+/* ---------- COMPOSER ---------- */
+const compModal=$('#compModal');let cType='foto';
+function openComp(){compModal.classList.add('open');$('#cT').focus()}
+compModal.addEventListener('click',e=>{if(e.target===compModal)compModal.classList.remove('open')});
+$('#pubBtn').addEventListener('click',openComp);$('#heroPub').addEventListener('click',openComp);
+$('#typeSel').addEventListener('click',e=>{const b=e.target.closest('[data-ct]');if(!b)return;
+ cType=b.dataset.ct;$$('#typeSel .chip').forEach(x=>x.classList.toggle('on',x===b));
+ $('#mediaFld').hidden=!(cType==='foto'||cType==='video');
+ $('#gameFld').hidden=cType!=='jogo';$('#langFld').hidden=cType!=='codigo'});
+function hashStr(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
+function mul32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function genArt(word){const c=document.createElement('canvas');c.width=640;c.height=360;const x=c.getContext('2d');
+ const r=mul32(hashStr(word||'varal'));
+ const pals=[['#1d3557','#e63946','#f1faee','#e8a013'],['#2a1a0d','#d9a441','#f4e7c3','#a53125'],
+  ['#0d0221','#ff2e88','#00e5ff','#ffd319'],['#0f2e2a','#7ddb8a','#f4efe2','#e8a013'],['#2b1055','#7597de','#fff','#ff9a3c']];
+ const P=pals[(r()*pals.length)|0];
+ x.fillStyle=P[0];x.fillRect(0,0,640,360);
+ for(let i=0;i<14;i++){x.fillStyle=P[1+(r()*3)|0];x.globalAlpha=.5+r()*.5;
+  const s=20+r()*120,px=r()*640,py=r()*360,k=r();
+  if(k<.4){x.beginPath();x.arc(px,py,s/2,0,7);x.fill()}
+  else if(k<.7){x.save();x.translate(px,py);x.rotate(r()*3);x.fillRect(-s/2,-s/2,s,s);x.restore()}
+  else{x.beginPath();x.moveTo(px,py-s/2);x.lineTo(px+s/2,py+s/2);x.lineTo(px-s/2,py+s/2);x.fill()}}
+ x.globalAlpha=1;return c.toDataURL()}
+$('#genBtn').addEventListener('click',()=>{const d=genArt(($('#cSeed').value||$('#cT').value||'varal')+Date.now()%97);
+ $('#capPrev').src=d;$('#capPrev').dataset.art=d;toast('🎨 capa gerada! (clique de novo pra outra)')});
+$('#compForm').addEventListener('submit',e=>{e.preventDefault();
+ const title=$('#cT').value.trim(),desc=$('#cD').value.trim();if(!title||!desc)return;
+ const tags=$('#cTags').value.split(',').map(s=>s.trim().replace(/^#/,'')).filter(Boolean).slice(0,4);
+ const p={id:'c'+Date.now(),type:cType,u:'you',title,desc,tags,time:'agora',claps:0,comments:[]};
+ if(cType==='foto'||cType==='video'){p.media=$('#capPrev').dataset.art||null;
+  p.seed='varal-user-'+Math.random().toString(36).slice(2,7);if(cType==='video')p.dur='0:30'}
+ if(cType==='texto')p.excerpt=desc;
+ if(cType==='jogo')p.play=$('#cGame').value,p.seed='varal-user-jogo';
+ if(cType==='codigo'){p.lang=$('#cLang').value;p.stars=0;p.code=['// recém pendurado','// o mundo que aguarde'];p.title=title}
+ created.unshift(p);store.set('varal-created',JSON.stringify(created));
+ bumpStreak();compModal.classList.remove('open');e.target.reset();$('#capPrev').removeAttribute('data-art');
+ F.type='all';F.tag=null;renderTypes();renderFeed();renderExplore();renderTrend();updateStats();
+ const first=$('#feed .post');if(first)first.classList.add('hang');
+ document.getElementById('varal').scrollIntoView({behavior:RM?'auto':'smooth'});
+ toast('🧷 pendurado com sucesso! a vizinhança já está olhando.');
+ const r=$('#varal').getBoundingClientRect();burst(innerWidth/2,r.top+80,60)});
+function bumpStreak(){const today=new Date().toDateString();const st=store.json('varal-streak',{day:0,last:''});
+ const yest=new Date(Date.now()-864e5).toDateString();
+ st.day=st.last===today?st.day:(st.last===yest?st.day+1:1);st.last=today;
+ store.set('varal-streak',JSON.stringify(st));paintStreak()}
+function paintStreak(){const st=store.json('varal-streak',{day:1});$('#streak').textContent='🔥 dia '+Math.max(1,st.day)+' pendurando'}
+
+/* ---------- CAIXA ---------- */
+$('#boxBtn').addEventListener('click',()=>{const items=[...saved].map(byId).filter(Boolean);
+ openModal(`<h3>📦 Sua caixa</h3><p style="color:var(--muted);font-size:.86rem;margin-bottom:1rem">coisas que você guardou pra não esquecer (ou pra mostrar pra galera).</p>`+
+  (items.length?items.map(p=>`<div class="boxitem">
+   <img src="${p.media||('https://picsum.photos/seed/'+p.seed+'/160/110')}" alt="">
+   <div><b>${esc(p.title)}</b><br><span class="mono" style="color:var(--muted)">${USERS[p.u].h}</span></div>
+   <button class="btn small rm" data-unsave="${p.id}">tirar</button></div>`).join(''):
+   '<p style="color:var(--muted);font-style:italic">caixa vazia — clique no 🔖 dos posts pra guardar.</p>'))});
+document.addEventListener('click',e=>{const b=e.target.closest('[data-unsave]');if(b){toggleSave(b.dataset.unsave);
+ $('#boxBtn').click()}});
+
+/* ---------- NOTIFICAÇÕES ---------- */
+let unread=3;
+const NOTIFS=[{i:'🧷',t:'<b>@maricoder</b> grampeou sua futura publicação',u:true},
+ {i:'💬',t:'<b>@ninaletras</b> comentou: "pendura mais!"',u:true},
+ {i:'➕',t:'<b>@teopixel</b> começou a seguir você',u:true},
+ {i:'🌬️',t:'Previsão: ventania forte hoje. Prenda bem as coisas.',u:false},
+ {i:'🏆',t:'Recorde do dia: 341 grampos numa foto de quintal',u:false}];
+function paintNotifs(){$('#notifPanel').innerHTML=NOTIFS.map(n=>
+ `<div class="nitem ${n.u?'unread':''}"><span>${n.i}</span><span>${n.t}</span></div>`).join('')+
+ '<p class="mono" style="text-align:center;color:var(--muted);padding:.4rem">o varal avisa, mas não grita</p>';
+ $('#bellBadge').hidden=unread===0;$('#bellBadge').textContent=unread}
+$('#bellBtn').addEventListener('click',()=>{const p=$('#notifPanel');p.classList.toggle('open');
+ if(p.classList.contains('open')){unread=0;NOTIFS.forEach(n=>n.u=false);setTimeout(paintNotifs,400)}});
+document.addEventListener('click',e=>{if(!e.target.closest('.notif-wrap'))$('#notifPanel').classList.remove('open')});
+
+/* ---------- NOITE ---------- */
+function setNight(on){document.body.classList.toggle('noite',on);$('#nightBtn').textContent=on?'🌙':'🌞';
+ store.set('varal-night',on?'1':'0');
+ document.querySelector('meta[name="theme-color"]').setAttribute('content',on?'#0f1320':'#f4efe2')}
+$('#nightBtn').addEventListener('click',()=>{const on=!document.body.classList.contains('noite');setNight(on);
+ toast(on?'🌙 o varal ficou sob as estrelas':'🌞 bom dia, varal!')});
+if(store.get('varal-night')==='1')setNight(true);
+
+/* ---------- TICKER / VENTO ---------- */
+const TICKS=['+3 fotos penduradas na última hora','@ninaletras publicou um capítulo novo 📖','🌬️ rajada de vento registrada — ninguém se feriu',
+ '12 grampos dados agora há pouco','recorde do dia: 341 grampos numa foto de quintal','um vaga-lume foi visto na Sala de Máquinas ✨',
+ '@lua.bot elogiou 47 posts hoje. ela não descansa.'];
+let ti=0;setInterval(()=>{const el=$('#tickMsg');el.style.opacity=0;
+ setTimeout(()=>{ti=(ti+1)%TICKS.length;el.textContent=TICKS[ti];el.style.opacity=1},400)},4200);
+$('#tickMsg').textContent=TICKS[0];
+if(!RM)setInterval(()=>{$$('.post').forEach((p,i)=>setTimeout(()=>{p.classList.add('wind');
+ setTimeout(()=>p.classList.remove('wind'),1400)},i*70));
+ if(Math.random()<.5)toast('💨 ventania no varal! segurem as criações.')},38000);
+
+/* ---------- NAVEGAÇÃO / ATALHOS ---------- */
+$$('.nbtn').forEach(b=>b.addEventListener('click',()=>document.querySelector(b.dataset.go).scrollIntoView({behavior:RM?'auto':'smooth'})));
+$('#brandBtn').addEventListener('click',()=>scrollTo({top:0,behavior:RM?'auto':'smooth'}));
+$('#meAva').addEventListener('click',()=>openProfile('you'));
+$$('[data-mini]').forEach(m=>m.addEventListener('click',()=>document.getElementById('varal').scrollIntoView({behavior:RM?'auto':'smooth'})));
+addEventListener('scroll',()=>$('#backTop').classList.toggle('show',scrollY>700),{passive:true});
+$('#backTop').addEventListener('click',()=>scrollTo({top:0,behavior:RM?'auto':'smooth'}));
+addEventListener('keydown',e=>{if(/input|textarea|select/i.test(e.target.tagName)||e.target.isContentEditable)return;
+ const k=e.key.toLowerCase();
+ if(k==='p')openComp();if(k==='e')document.getElementById('explorar').scrollIntoView({behavior:RM?'auto':'smooth'});
+ if(k==='n')$('#nightBtn').click()});
+
+/* ---------- INIT ---------- */
+const revealIO=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');revealIO.unobserve(e.target)}}),{threshold:.1});
+$$('.reveal').forEach(el=>revealIO.observe(el));
+renderTypes();renderFeed();renderExplore();renderTrend();renderSug();paintNotifs();paintStreak();updateStats();
+setTimeout(()=>toast('🧷 bem-vindo(a) ao varal. pode pendurar sem pedir licença.'),900);
+})();
+</script>
+</body>
+</html>
