@@ -1,0 +1,4 @@
+[
+{"artifact_id":"lost-beyond-racing-build","project_id":null,"entity_id":"beyond-racing-3d","title":"Beyond Racing 3D executable/build","class":"LOST","role":"LOST_ARTIFACT_MARKER","publication_state":"SAFE_PUBLIC","notes":"No preserved build; vehicle/free-drive source state remains the maximum confirmed state."},
+{"artifact_id":"record-beyond-racing-closeout","project_id":null,"entity_id":"beyond-racing-3d","title":"Archaeology 063 final closeout","class":"ARCHAEOLOGY_REPORT","role":"HERO","publication_state":"SAFE_AFTER_SCRUB","notes":"Use as bounded archaeological record, not as runtime."}
+]

@@ -1,0 +1,11 @@
+[
+{"from":"ester","to":"modelperson","type":"SUBSYSTEM","confidence":"DOCUMENTED","description":"ModelPerson is covered as an Ester-family subsystem.","source":"Archaeology 051 / 053"},
+{"from":"one-life-iara","to":"ester","type":"CONCEPTUAL","confidence":"UNRESOLVED","description":"Related identity/runtime research; no direct technical lineage asserted.","source":"069 master"},
+{"from":"pavi-ems-p0","to":"pavi-ems-p05x","type":"PARALLEL","confidence":"UNRESOLVED","description":"P0.5X is a separate upstream audit context.","source":"Archaeology 067"},
+{"from":"pavi-ems-p1","to":"pavi-ems-p05x","type":"PARALLEL","confidence":"UNRESOLVED","description":"P0.5X is not promoted to a simplified P1.","source":"Archaeology 067"},
+{"from":"beyond-powers","to":"beyond-racing-3d","type":"PARALLEL","confidence":"DOCUMENTED","description":"Separate game projects.","source":"Archaeology 063"},
+{"from":"beyond-racing-3d","to":"beyond-powers","type":"SEPARATE_PROJECT","confidence":"DOCUMENTED","description":"Beyond Racing 3D is explicitly separate from Beyond Powers; no parent relation is assigned.","source":"Archaeology 062 / 063"},
+{"from":"rotary-019","to":"projeto-engine","type":"REFERENCE_ONLY","confidence":"DOCUMENTED","description":"Projeto Engine has a rotary module; this does not recover or identify the 019 project.","source":"Archaeology 066"},
+{"from":"projeto-engine","to":"engine-lab","type":"PARALLEL","confidence":"DOCUMENTED","description":"Same parent context, separate source evidence.","source":"Archaeology 066"},
+{"from":"e3","to":"arquivo-inacabado","type":"DOCUMENTARY","confidence":"INFERRED","description":"E3 is a documentary source/reference for the later archive concept; site consumption is unconfirmed.","source":"Archaeology 068"}
+]

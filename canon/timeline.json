@@ -1,0 +1,8 @@
+[
+{"date":"2025-12-25","kind":"PRIMARY_ARTIFACT","project":"airengine","label":"Air Engine V2 ZIP appears in the preserved AirEngine root.","confidence":"MEDIUM"},
+{"date":"2025-12-27","kind":"PRIMARY_ARTIFACT","project":"airengine","label":"STEP/STL/IGES exchange archive appears in the AirEngine root.","confidence":"MEDIUM"},
+{"date":"2026-05-01","kind":"SOURCE","project":"projeto-engine","label":"Projeto Engine and Engine Lab source/distribution artifacts are dated in the preserved roots.","confidence":"MEDIUM"},
+{"date":"UNRESOLVED","kind":"FREEZE","entity":"beyond-racing-3d","label":"Archaeology 063 closes Beyond Racing 3D as a separate Unity vehicle/free-drive MVP with no preserved build.","confidence":"HIGH"},
+{"date":"2026-05-13","kind":"OTHER","project":"projeto-engine","label":"Latest preserved runtime residue in the engine-sim distribution; successful run remains unconfirmed.","confidence":"LOW"},
+{"date":"2026-09-04","kind":"FREEZE","project":"arquivo-inacabado","label":"Archaeology 069 freezes the campaign index for 001–068.","confidence":"HIGH"}
+]

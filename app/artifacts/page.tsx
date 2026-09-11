@@ -1,0 +1,6 @@
+import artifacts from "../../canon/artifacts.json";
+import { ArchivePage, ArchiveSection } from "../archive-page";
+
+export default function ArtifactsPage() {
+  return <ArchivePage kicker="06 / MUSEU DE ARTEFATOS" title="As coisas que sobraram" intro="Um índice de objetos preservados, ausentes e ainda sem lugar. O arquivo começa pelo que existe — e dá nome ao que desapareceu."><ArchiveSection label="ARTIFACTS_" title="Objetos, não promessas"><div className="artifact-list">{artifacts.map((artifact) => <article className="artifact-object" key={artifact.artifact_id}><div className="artifact-object-top"><span className="eyebrow">{artifact.class}</span><span>{artifact.publication_state}</span></div><h3>{artifact.title}</h3><p>{artifact.notes}</p><div className="artifact-meta"><span>{artifact.role}</span><span>{artifact.project_id ?? artifact.entity_id ?? "UNBOUND"}</span></div></article>)}</div></ArchiveSection><ArchiveSection label="COMO LER" title="O objeto também tem limite"><p>Um marcador de artefato perdido não é uma falha da página. É parte da história. Metadados públicos não substituem um arquivo original, e um arquivo original não prova que algo funcionou.</p></ArchiveSection></ArchivePage>;
+}

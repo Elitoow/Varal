@@ -1,0 +1,5 @@
+import Link from 'next/link';
+
+export default function StudioPage() {
+  return <main className="studio-shell studio-landing"><header className="studio-topbar"><Link href="/">ARQUIVO INACABADO_</Link><b>STUDIO_</b><span>LOCAL / RASCUNHO</span></header><section className="studio-intro"><span className="studio-kicker">ARQUIVO ABERTO / CONSTRUTOR</span><h1>Uma sala para cada coisa que decidimos tentar_</h1><p>Crie uma página própria para um projeto, experimento, jogo, objeto ou ideia. Escolha o mundo, organize os blocos e veja tudo ganhar forma.</p><Link className="studio-button studio-button-dark" href="/studio/new">CRIAR NOVA SALA_ ↗</Link></section><section className="studio-landing-grid"><article><span>01 / SEM CÓDIGO_</span><h2>Blocos vivos</h2><p>Texto, galeria, diário, artefatos, timeline e mais — tudo rearranjável.</p></article><article><span>02 / SETE MUNDOS_</span><h2>Uma estética sua</h2><p>Caderno, oficina, zine, terminal, arcade, galeria ou minimal.</p></article><article><span>03 / LOCAL PRIMEIRO_</span><h2>Rascunho seguro</h2><p>O editor salva no navegador. A publicação real continua sendo uma decisão sua.</p></article></section></main>;
+}
