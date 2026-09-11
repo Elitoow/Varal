@@ -6,6 +6,10 @@ node_modules/
 dist/
 build/
 target/
+.next/
+.vinext/
+.wrangler/
+next-env.d.ts
 
 # Environment
 .env
