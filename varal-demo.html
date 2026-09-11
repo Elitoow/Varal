@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🧷 VARAL_do_arquivo — pendure qualquer coisa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Karla:ital,wght@0,400;0,500;0,700;0,800;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+:root{
+--bg:#f4efe2;--panel:#fffdf7;--panel2:#faf5e8;--ink:#211c14;--muted:#7c7362;--line:#ddd2b8;
+--rope:#8a6a44;--pin1:#e0472e;--pin2:#2456d4;--pin3:#e8a013;
+--acc:#e0472e;--shadow:0 14px 30px rgba(84,64,20,.12);
+--fd:'Bricolage Grotesque',sans-serif;--fb:'Karla',sans-serif;--fm:'Space Mono',monospace}
+body{font-family:var(--fb);background:var(--bg);color:var(--ink);overflow-x:hidden;line-height:1.6;
+transition:background .5s,color .5s;background-image:radial-gradient(rgba(138,106,68,.07) 1px,transparent 1.4px);background-size:26px 26px}
+.wrap{width:min(1200px,93%);margin-inline:auto}
+
+/* Top Navigation */
+.topbar{position:sticky;top:0;z-index:130;background:var(--bg);border-bottom:2px solid var(--line);backdrop-filter:blur(10px)}
+.topbar-in{display:flex;align-items:center;gap:1rem;padding:.75rem 0;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:.5rem;text-decoration:none;color:var(--ink);font-family:var(--fd);font-weight:800;font-size:1.2rem}
+.brand-pin{font-size:1.4rem;animation:swing 3s ease-in-out infinite;transform-origin:top center;display:inline-block}
+@keyframes swing{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
+.brand-text{display:flex;flex-direction:column;line-height:1}
+.brand-sub{font-size:.6em;font-family:var(--fm);font-weight:400;opacity:.7}
+.nav{display:flex;gap:.3rem;margin-inline:auto}
+.nav-btn{background:none;border:none;font-family:var(--fb);font-weight:800;font-size:.85rem;color:var(--muted);cursor:pointer;padding:.5rem .8rem;border-radius:999px;transition:.2s;text-decoration:none}
+.nav-btn:hover,.nav a:hover{color:var(--ink);background:rgba(224,71,46,.12)}
+.nav-btn.active{background:var(--acc);color:white}
+.tools{display:flex;gap:.5rem;align-items:center}
+.lang-btn{width:42px;height:42px;border-radius:12px;border:2px solid var(--line);background:var(--panel);font-weight:800;cursor:pointer;transition:.2s}
+.lang-btn:hover{transform:translateY(-3px) rotate(-4deg);border-color:var(--ink)}
+.user-avatar{width:42px;height:42px;border-radius:12px;border:2px solid var(--ink);background:var(--acc);color:white;display:grid;place-items:center;font-weight:800;font-size:.9rem;cursor:pointer;transition:.2s}
+.user-avatar:hover{transform:rotate(-4deg) scale(1.06)}
+
+/* Stories */
+.stories{padding:1.5rem 0 .5rem;border-bottom:2px solid var(--line)}
+.stories-strip{display:flex;gap:.9rem;overflow-x:auto;padding:.5rem .2rem}
+.story-bubble{background:none;border:none;cursor:pointer;text-align:center;width:76px;flex:none}
+.story-ring{width:66px;height:66px;border-radius:50%;padding:3px;margin-inline:auto;transition:.2s}
+.ring-1{background:conic-gradient(var(--pin1),var(--pin3),var(--pin2),var(--pin1))}
+.ring-2{background:conic-gradient(var(--pin2),var(--pin1),var(--pin3),var(--pin2))}
+.ring-3{background:conic-gradient(var(--pin3),var(--pin2),var(--pin1),var(--pin3))}
+.ring-add{background:var(--panel);border:2px dashed var(--muted);display:grid;place-items:center;font-size:1.8rem;color:var(--acc)}
+.story-img{width:100%;height:100%;border-radius:50%;background:var(--panel);border:3px solid var(--bg);display:grid;place-items:center;font-size:1.5rem;font-weight:800;color:var(--muted)}
+.story-label{display:block;font-size:.62rem;font-weight:800;margin-top:.3rem;color:var(--muted);max-width:76px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.story-bubble:hover .story-ring{transform:scale(1.08) rotate(3deg)}
+
+/* Hero */
+.hero{padding:clamp(2.5rem,6vw,4.5rem) 0 2rem;position:relative}
+.hero-content{max-width:600px}
+.eyebrow{font-family:var(--fm);font-size:.72rem;letter-spacing:.24em;text-transform:uppercase;color:var(--acc);font-weight:700}
+.hero h1{font-family:var(--fd);font-size:clamp(2.6rem,6.5vw,4.8rem);font-weight:800;margin:.7rem 0 1rem;line-height:1.08}
+.hero h1 em{font-family:Georgia,serif;font-style:italic;font-weight:400;color:var(--pin3)}
+.hero-lead{color:var(--muted);font-size:1.05rem;max-width:48ch;font-weight:500;line-height:1.6}
+.hero-actions{display:flex;gap:.9rem;margin-top:1.8rem;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:.5rem;padding:.85rem 1.3rem;border:2px solid var(--ink);border-radius:12px;background:var(--panel);color:var(--ink);font-family:var(--fd);font-weight:700;font-size:.86rem;cursor:pointer;box-shadow:4px 4px 0 var(--ink);transition:transform .15s,box-shadow .15s}
+.btn:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--ink)}
+.btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.btn-primary{background:var(--acc);color:white;border-color:var(--ink)}
+.btn-outline{background:transparent}
+.hero-stats{display:flex;gap:2rem;margin-top:2.2rem;flex-wrap:wrap}
+.stat{display:flex;flex-direction:column}
+.stat strong{font-family:var(--fd);font-weight:800;font-size:1.7rem}
+.stat span{font-size:.64rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);font-weight:800}
+
+/* Hero Rope */
+.hero-rope{position:absolute;right:5%;top:20%;width:40%;height:300px}
+.rope-svg{position:absolute;inset:0;width:100%;height:100%}
+.hanging-card{position:absolute;width:clamp(96px,12vw,140px);background:var(--panel);border:2px solid var(--ink);border-radius:8px;padding:7px;box-shadow:var(--shadow);transform-origin:top center;animation:sway 4s ease-in-out infinite;cursor:pointer;text-decoration:none;color:var(--ink)}
+@keyframes sway{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+.card-pin{position:absolute;top:-12px;left:50%;transform:translateX(-50%);width:12px;height:26px;border-radius:4px;background:linear-gradient(180deg,var(--pc,var(--pin1)),rgba(0,0,0,.28));box-shadow:0 2px 3px rgba(0,0,0,.35)}
+.p1{--pc:var(--pin1)}.p2{--pc:var(--pin2)}.p3{--pc:var(--pin3)}
+.card-thumb{border-radius:4px;aspect-ratio:4/3;background:var(--line);display:grid;place-items:center;font-size:2rem;font-weight:800;color:var(--muted)}
+.card-label{display:block;text-align:center;font-family:var(--fd);font-weight:700;font-size:.66rem;letter-spacing:.06em;padding-top:.35rem;text-transform:uppercase}
+
+/* Filters */
+.filters{padding:1rem 0;border-bottom:2px solid var(--line)}
+.filter-chips{display:flex;gap:.4rem;flex-wrap:wrap}
+.chip{padding:.5rem .95rem;border:2px solid var(--line);border-radius:999px;background:var(--panel);color:var(--ink);font-family:var(--fb);font-weight:800;font-size:.78rem;cursor:pointer;transition:.2s}
+.chip:hover{border-color:var(--ink);transform:translateY(-2px)}
+.chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+/* Layout */
+.layout{display:grid;grid-template-columns:255px minmax(0,1fr);gap:2rem;padding-block:2.6rem;align-items:start}
+.sidebar{position:sticky;top:86px;display:flex;flex-direction:column;gap:1rem}
+.sidecard{background:var(--panel);border:2px solid var(--line);border-radius:14px;padding:1.1rem;box-shadow:var(--shadow)}
+.sidecard h4{font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin-bottom:.8rem}
+.profile-header{display:flex;gap:.8rem;align-items:center;margin-bottom:1rem}
+.profile-avatar{width:52px;height:52px;border-radius:14px;border:2px solid var(--ink);background:var(--acc);color:white;display:grid;place-items:center;font-weight:800;font-size:1.2rem}
+.profile-header strong{font-family:var(--fd);font-size:1rem;display:block}
+.profile-level{display:inline-block;background:var(--acc);color:white;border-radius:999px;padding:.1rem .6rem;font-size:.64rem;font-weight:800;letter-spacing:.08em}
+.profile-stats{display:flex;gap:1rem;padding:.6rem 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.ps-item{display:flex;flex-direction:column;align-items:center}
+.ps-item strong{font-size:1.1rem;font-weight:800}
+.ps-item span{font-size:.64rem;color:var(--muted);font-weight:700}
+.ach-tag{display:inline-block;background:rgba(224,71,46,.12);color:var(--acc);padding:.2rem .5rem;border-radius:6px;font-size:.6rem;font-weight:800;margin:.2rem .2rem 0 0}
+
+/* Trends */
+.trends-list,.suggestions-list{display:flex;flex-direction:column;gap:.45rem}
+.trend-item{display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--ink);padding:.3rem .4rem;border-radius:8px;transition:.15s}
+.trend-item:hover{background:rgba(224,71,46,.12);color:var(--acc);transform:translateX(3px)}
+.trend-rank{font-style:normal;color:var(--muted);font-size:.7rem;font-weight:700}
+.trend-name{font-family:var(--fb);font-weight:800;font-size:.85rem;flex:1;margin-left:.5rem}
+.trend-count{font-size:.7rem;color:var(--muted)}
+.suggestion-item{display:flex;gap:.6rem;align-items:center}
+.sugg-avatar{width:36px;height:36px;border-radius:10px;border:2px solid var(--line);background:var(--panel);display:grid;place-items:center;font-weight:800}
+.suggestion-item strong{font-size:.82rem;display:block;line-height:1.2}
+.suggestion-item span{font-size:.68rem;color:var(--muted);font-weight:700}
+.follow-btn{margin-left:auto;border:2px solid var(--ink);background:var(--panel);border-radius:999px;padding:.28rem .7rem;font-weight:800;font-size:.68rem;cursor:pointer;transition:.2s;font-family:var(--fb)}
+.follow-btn:hover{transform:scale(1.08) rotate(-3deg)}
+
+/* Feed */
+.feed{display:flex;flex-direction:column;gap:1.8rem}
+.post{position:relative;background:var(--panel);border:2px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:1.3rem 1.3rem 1rem;transform:rotate(var(--rot,0deg));transition:transform .3s}
+.post:hover{transform:rotate(0) translateY(-5px)}
+.post-head{display:flex;gap:.7rem;align-items:center;margin-bottom:.9rem}
+.post-avatar{width:44px;height:44px;border-radius:12px;border:2px solid var(--ink);background:var(--acc);color:white;display:grid;place-items:center;font-weight:800;font-size:1.1rem}
+.post-meta{display:flex;flex-direction:column}
+.post-meta strong{font-family:var(--fd);font-size:.95rem;line-height:1.2}
+.post-meta span{font-family:var(--fm);font-size:.66rem;color:var(--muted)}
+.post-type{margin-left:auto;font-size:.64rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;border:2px solid var(--line);border-radius:999px;padding:.3rem .7rem;color:var(--muted)}
+.post-media{position:relative;border-radius:10px;overflow:hidden;border:2px solid var(--line);cursor:pointer;margin-bottom:.9rem}
+.media-placeholder{width:100%;aspect-ratio:16/9;background:linear-gradient(135deg,var(--line),var(--panel));display:grid;place-items:center;font-size:3rem;font-weight:800;color:var(--muted)}
+.media-tag{position:absolute;right:10px;bottom:10px;background:rgba(10,10,14,.75);color:white;font-family:var(--fm);font-size:.64rem;padding:.25rem .5rem;border-radius:6px}
+.post-info{margin-bottom:.9rem}
+.post-title{font-size:1.1rem;font-weight:800;margin:0 0 .5rem;color:var(--ink)}
+.post-tags{display:flex;gap:.4rem;flex-wrap:wrap}
+.tag-pill{border:1.5px solid var(--line);background:transparent;color:var(--muted);border-radius:999px;padding:.28rem .7rem;font-size:.72rem;font-weight:800;cursor:pointer;transition:.2s;font-family:var(--fb)}
+.tag-pill:hover{color:var(--acc);border-color:var(--acc);transform:rotate(-2deg)}
+.post-actions{display:flex;gap:.3rem;border-top:2px dashed var(--line);padding-top:.7rem;flex-wrap:wrap}
+.action-btn{display:inline-flex;gap:.4rem;align-items:center;background:none;border:none;padding:.42rem .75rem;border-radius:999px;font-weight:800;font-size:.85rem;cursor:pointer;color:var(--muted);transition:.2s;font-family:var(--fb)}
+.action-btn:hover{background:rgba(224,71,46,.12);color:var(--ink);transform:translateY(-2px)}
+.action-btn.like.on{color:var(--pin1)}
+.action-btn.save.on{color:var(--pin2)}
+.action-icon{font-size:1.1rem}
+.action-count{font-size:.8rem}
+
+/* Drawers */
+.drawers-header{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;margin-bottom:1.4rem}
+.drawers-header h2{font-size:1.7rem;font-weight:800;font-family:var(--fd)}
+.search-box{display:flex;align-items:center;gap:.5rem;background:var(--panel);border:2px solid var(--line);border-radius:12px;padding:.5rem .8rem}
+.search-box input{border:none;background:none;outline:none;font-family:inherit;font-size:.9rem;color:var(--ink)}
+.drawer{background:var(--panel);border:2px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:1rem}
+.drawer summary{display:flex;align-items:center;gap:1rem;padding:1rem 1.3rem;cursor:pointer;background:var(--panel2);list-style:none}
+.drawer summary::-webkit-details-marker{display:none}
+.drawer-tab{font-family:var(--fm);font-size:.85rem;font-weight:800;color:var(--muted)}
+.drawer summary strong{font-family:var(--fd);font-size:1rem;font-weight:800}
+.drawer summary small{margin-left:auto;font-size:.75rem;color:var(--muted)}
+.drawer-items{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1px;background:var(--line);padding:1px}
+.object-card{background:var(--panel);padding:1.3rem;text-decoration:none;color:var(--ink);display:flex;flex-direction:column;gap:.5rem;transition:.2s}
+.object-card:hover{background:var(--panel2)}
+.object-card-meta{font-family:var(--fm);font-size:.7rem;color:var(--muted)}
+.object-card h3{font-family:var(--fd);font-size:1.1rem;font-weight:800;margin:0}
+.object-card h3 b{float:right;color:var(--acc)}
+.object-card p{font-size:.9rem;color:var(--muted);margin:0;line-height:1.5}
+.object-card-foot{font-family:var(--fm);font-size:.7rem;color:var(--muted);padding-top:.7rem;border-top:1px solid var(--line);margin-top:.5rem}
+
+/* Survived */
+.survived-zone{padding:3rem 0;border-top:2px solid var(--line)}
+.zone-heading{margin-bottom:2rem}
+.zone-eyebrow{font-family:var(--fm);font-size:.72rem;letter-spacing:.24em;text-transform:uppercase;color:var(--acc);font-weight:700}
+.survived-zone h2{font-family:var(--fd);font-size:2rem;font-weight:800;margin:.5rem 0}
+.survived-zone p{color:var(--muted);font-size:1rem;max-width:600px}
+.survived-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1px;background:var(--line)}
+.survived-card{background:var(--panel);padding:1.5rem;text-decoration:none;color:var(--ink);display:flex;flex-direction:column;gap:.5rem;transition:.2s}
+.survived-card:hover{background:var(--panel2)}
+.survived-index{font-family:var(--fm);font-size:.75rem;color:var(--muted)}
+.survived-card strong{font-family:var(--fd);font-size:1.2rem;font-weight:800}
+.status-indicator{font-style:normal;font-family:var(--fm);font-size:.7rem;color:var(--acc);padding:.3rem .6rem;border:1px solid var(--line);border-radius:6px;align-self:flex-start;margin-top:.5rem}
+
+/* Footer */
+.footer{border-top:2px solid var(--line);padding:2rem 0;margin-top:3rem}
+.footer-content{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1.5rem}
+.footer-brand{display:flex;flex-direction:column}
+.footer-brand strong{font-family:var(--fd);font-size:1.1rem}
+.footer-brand span{font-size:.85rem;color:var(--muted)}
+.footer-stats{display:flex;gap:1.5rem;font-family:var(--fm);font-size:.75rem;color:var(--muted)}
+.footer-links{display:flex;gap:1rem}
+.footer-links a{color:var(--muted);text-decoration:none;font-family:var(--fm);font-size:.75rem;font-weight:700;transition:.2s}
+.footer-links a:hover{color:var(--acc)}
+
+/* Responsive */
+@media(max-width:900px){.layout{grid-template-columns:1fr}.sidebar{position:static;display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1rem}.hero-rope{display:none}.nav{display:none}}
+@media(max-width:600px){.topbar-in{flex-wrap:wrap}.tools{margin-left:auto}.stories-strip{gap:.6rem}.story-bubble{width:66px}.story-ring{width:56px;height:56px}.filter-chips{overflow-x:auto;flex-wrap:nowrap}.footer-content{flex-direction:column;align-items:flex-start}}
+</style>
+</head>
+<body>
+<header class="topbar">
+<div class="wrap topbar-in">
+<a href="#top" class="brand">
+<span class="brand-pin">🧷</span>
+<span class="brand-text">VARAL<span class="brand-sub">_do_arquivo</span></span>
+</a>
+<nav class="nav">
+<button class="nav-btn active" onclick="setView('feed')">Varal recente</button>
+<button class="nav-btn" onclick="setView('drawers')">Gavetas</button>
+<a href="#survived">O que sobrou_</a>
+<a href="#missing">O que sumiu_</a>
+</nav>
+<div class="tools">
+<button class="lang-btn" onclick="toggleLang()">PT</button>
+<div class="user-avatar">AI</div>
+</div>
+</div>
+</header>
+
+<section class="stories">
+<div class="wrap">
+<div class="stories-strip" id="storiesStrip"></div>
+</div>
+</section>
+
+<section class="hero" id="top">
+<div class="wrap">
+<div class="hero-content">
+<span class="eyebrow">VARAL_DO_ARQUIVO / pendure seu projeto</span>
+<h1>Coisas que decidimos<br><em>tentar.</em></h1>
+<p class="hero-lead">Um varal de projetos inacabados. Pendure suas sobras: pastas, placas, modelos, cenas, documentos e perguntas que ainda não fecharam. Cada projeto é um post, cada post é uma história.</p>
+<div class="hero-actions">
+<button class="btn btn-primary" onclick="document.getElementById('feed').scrollIntoView({behavior:'smooth'})">Explorar varal ↘</button>
+<button class="btn btn-outline" onclick="randomProject()">Me surpreenda ✦</button>
+</div>
+<div class="hero-stats">
+<div class="stat"><strong id="statProjects">0</strong><span>projetos</span></div>
+<div class="stat"><strong id="statVisited">0</strong><span>visitados</span></div>
+<div class="stat"><strong id="statLikes">0</strong><span>likes</span></div>
+</div>
+</div>
+<div class="hero-rope" id="heroRope"></div>
+</div>
+</section>
+
+<section class="filters">
+<div class="wrap">
+<div class="filter-chips" id="filterChips">
+<button class="chip on" onclick="setFilter('all')">Todos</button>
+</div>
+</div>
+</section>
+
+<div class="layout">
+<aside class="sidebar">
+<div class="sidecard">
+<div class="profile-header">
+<div class="profile-avatar">AI</div>
+<div>
+<strong>Arquivo Inacabado</strong>
+<span class="profile-level">Nível <span id="profileLevel">1</span></span>
+</div>
+</div>
+<div class="profile-stats">
+<div class="ps-item"><strong id="psVisited">0</strong><span>visitas</span></div>
+<div class="ps-item"><strong id="psLikes">0</strong><span>likes</span></div>
+<div class="ps-item"><strong id="psSaves">0</strong><span>salvos</span></div>
+</div>
+</div>
+<div class="sidecard">
+<h4>Em Alta 🔥</h4>
+<div class="trends-list" id="trendsList"></div>
+</div>
+<div class="sidecard">
+<h4>Sugestões</h4>
+<div class="suggestions-list" id="suggestionsList"></div>
+</div>
+</aside>
+
+<section class="main" id="feed">
+<div class="feed" id="feedContainer"></div>
+<div class="drawers-container" id="drawersContainer" style="display:none"></div>
+</section>
+</div>
+
+<section class="survived-zone" id="survived">
+<div class="wrap">
+<div class="zone-heading">
+<span class="zone-eyebrow">02 / O que funcionou</span>
+<h2>Projetos que sobreviveram</h2>
+<p>Projetos que passaram do conceito para algo tangível.</p>
+</div>
+<div class="survived-grid" id="survivedGrid"></div>
+</div>
+</section>
+
+<footer class="footer">
+<div class="wrap footer-content">
+<div class="footer-brand">
+<strong>VARAL_do_arquivo</strong>
+<span>feito de coisas que sobraram</span>
+</div>
+<div class="footer-stats">
+<span id="footerCount">0 projetos</span>
+<span id="footerVisited">0 visitas</span>
+</div>
+<div class="footer-links">
+<a href="#">sobre ↗</a>
+<a href="#">arquologia ↗</a>
+<a href="#">cemitério ↗</a>
+</div>
+</div>
+</footer>
+
+<script>
+// Demo data - simulating projects from the archive
+const projects = [
+{id:'ester-v1',name:'ESTER v1.0',family:'ESTER',oneLine:'Modelo de linguagem experimental',artifact:'model.bin',state:'FROZEN',aliases:['IA','LLM','português']},
+{id:'ester-v2',name:'ESTER v2.0',family:'ESTER',oneLine:'Identidade digital auto-consciente',artifact:'checkpoint.pt',state:'ACTIVE',aliases:['IA','identidade','memória']},
+{id:'onelife',name:'One Life Agency',family:'ONE LIFE / IARA',oneLine:'Agência de talentos digitais',artifact:'site.zip',state:'FROZEN',aliases:['agência','talentos','digital']},
+{id:'iara',name:'IARA',family:'ONE LIFE / IARA',oneLine:'Influenciadora virtual brasileira',artifact:'blend+unity',state:'MISSING',aliases:['VTuber','3D','streaming']},
+{id:'pavi-p0',name:'PAVI P0',family:'PAVI EMS',oneLine:'Protótipo de placa automotiva',artifact:'gerber+step',state:'FROZEN',aliases:['PCB','carros','eletrônica']},
+{id:'pavi-p1',name:'PAVI P1',family:'PAVI EMS',oneLine:'Versão revisada com CAN bus',artifact:'gerber+bom',state:'ACTIVE',aliases:['PCB','CAN','automotivo']},
+{id:'ft300x',name:'FT-300X',family:'PAVI EMS',oneLine:'Fake turbo controller',artifact:'pcb+enclosure',state:'FROZEN',aliases:['turbo','fake','carros']},
+{id:'beyond',name:'Beyond Racing',family:'GAMES',oneLine:'Jogo de corrida Unity 3D',artifact:'unity+prefabs',state:'LOST',aliases:['Unity','corrida','3D']},
+{id:'ai-battle',name:'AI Battle',family:'GAMES',oneLine:'Batalha de IAs em arena',artifact:'godot+gdscript',state:'FROZEN',aliases:['Godot','IA','arena']},
+{id:'engine2d',name:'Engine 2D',family:'ENGINE / MECHANICAL',oneLine:'Motor físico 2D customizado',artifact:'cpp+headers',state:'FROZEN',aliases:['engine','física','C++']},
+{id:'doc-archive',name:'Doc Archive',family:'DOCUMENTARY / ARCHIVE',oneLine:'Sistema de arquivamento',artifact:'sqlite+python',state:'ACTIVE',aliases:['banco','arquivo','Python']},
+{id:'char-gen',name:'Character Gen',family:'CHARACTERS',oneLine:'Gerador de personagens procedural',artifact:'blender+py',state:'FROZEN',aliases:['Blender','procedural','personagens']}
+];
+
+const families = {
+'ESTER':'IA & Identidade',
+'ONE LIFE / IARA':'Agência & Vida',
+'PAVI EMS':'Carros & Eletrônica',
+'GAMES':'Jogos & Mundos',
+'ENGINE / MECHANICAL':'Motores & Mecânica',
+'DOCUMENTARY / ARCHIVE':'Arquivo & Docs',
+'CHARACTERS':'Personagens',
+'EXPERIMENTS':'Experimentos'
+};
+
+let state = {
+view:'feed',
+filter:'all',
+visited:new Set(),
+liked:new Set(),
+saved:new Set(),
+lang:'pt'
+};
+
+function hash(str){return str.split('').reduce((a,c)=>a+c.charCodeAt(0),0)}
+function getMeta(id){
+const h=hash(id);
+return{
+rotations:[(h%7)-3,((h*2)%9)-4,((h*3)%6)-2],
+pinColor:['p1','p2','p3'][h%3],
+likes:(h*17)%500,
+comments:(h*13)%50,
+saves:(h*11)%100,
+timeAgo:['2h','5h','1d','3d','1w','2w','1m'][h%7]
+}
+}
+
+function init(){
+document.getElementById('statProjects').textContent=projects.length;
+renderStories();
+renderHeroRope();
+renderFilters();
+renderFeed();
+renderTrends();
+renderSuggestions();
+renderSurvived();
+updateStats();
+}
+
+function renderStories(){
+const strip=document.getElementById('storiesStrip');
+strip.innerHTML=projects.slice(0,8).map((p,i)=>{
+const m=getMeta(p.id);
+return `<button class="story-bubble" onclick="visit('${p.id}')">
+<div class="story-ring ring-${(i%3)+1}"><div class="story-img">${p.name[0]}</div></div>
+<span class="story-label">${p.name.slice(0,10)}${p.name.length>10?'...':''}</span>
+</button>`}).join('')+
+`<button class="story-bubble story-add">
+<div class="story-ring ring-add">+</div>
+<span class="story-label">Novo post</span>
+</button>`;
+}
+
+function renderHeroRope(){
+const rope=document.getElementById('heroRope');
+rope.innerHTML=projects.slice(0,5).map((p,i)=>{
+const m=getMeta(p.id);
+const left=(i*20)+5;
+const top=(i%2===0?60:75)+Math.sin(i)*15;
+return `<a href="#" class="hanging-card ${m.pinColor}" style="left:${left}%;top:${top}px;transform:rotate(${m.rotations[0]}deg)" onclick="visit('${p.id}')">
+<div class="card-pin"></div>
+<div class="card-thumb">${p.name[0]}</div>
+<span class="card-label">${p.state}</span>
+</a>`}).join('');
+}
+
+function renderFilters(){
+const chips=document.getElementById('filterChips');
+Object.keys(families).forEach(f=>{
+chips.innerHTML+=`<button class="chip" onclick="setFilter('${f}')">${families[f]}</button>`;
+});
+}
+
+function renderFeed(){
+const container=document.getElementById('feedContainer');
+const filtered=state.filter==='all'?projects:projects.filter(p=>p.family===state.filter);
+container.innerHTML=filtered.map((p,i)=>{
+const m=getMeta(p.id);
+const isLiked=state.liked.has(p.id);
+const isSaved=state.saved.has(p.id);
+return `<article class="post post-${m.pinColor}" style="--rot:${m.rotations[i%3]}deg">
+<div class="post-head">
+<div class="post-avatar">${p.name[0]}</div>
+<div class="post-meta">
+<strong>${p.name}</strong>
+<span>${m.timeAgo} · ${p.family}</span>
+</div>
+<span class="post-type">${p.state}</span>
+</div>
+<div class="post-media" onclick="visit('${p.id}')">
+<div class="media-placeholder">${p.name[0]}</div>
+<span class="media-tag">${p.artifact}</span>
+</div>
+<div class="post-info">
+<h3 class="post-title">${p.oneLine}</h3>
+<div class="post-tags">${p.aliases.slice(0,3).map(a=>`<span class="tag-pill">${a}</span>`).join('')}</div>
+</div>
+<div class="post-actions">
+<button class="action-btn like ${isLiked?'on':''}" onclick="toggleLike('${p.id}')">
+<span class="action-icon">${isLiked?'❤️':'🤍'}</span>
+<span class="action-count">${isLiked?m.likes+1:m.likes}</span>
+</button>
+<button class="action-btn comment">
+<span class="action-icon">💬</span>
+<span class="action-count">${m.comments}</span>
+</button>
+<button class="action-btn save ${isSaved?'on':''}" onclick="toggleSave('${p.id}')">
+<span class="action-icon">${isSaved?'📌':'📍'}</span>
+<span class="action-count">${isSaved?m.saves+1:m.saves}</span>
+</button>
+<button class="action-btn share">
+<span class="action-icon">🔗</span>
+<span>Compartilhar</span>
+</button>
+</div>
+</article>`}).join('');
+}
+
+function renderDrawers(){
+const container=document.getElementById('drawersContainer');
+const grouped={};
+projects.forEach(p=>{
+if(!grouped[p.family])grouped[p.family]=[];
+grouped[p.family].push(p);
+});
+container.innerHTML=Object.entries(grouped).map(([fam,items],i)=>`
+<details class="drawer" ${i<2?'open':''}>
+<summary>
+<span class="drawer-tab">${String(i+1).padStart(2,'0')}</span>
+<strong>${families[fam]||fam}</strong>
+<small>${items.length} objetos</small>
+</summary>
+<div class="drawer-items">
+${items.map(p=>`<a href="#" class="object-card" onclick="visit('${p.id}')">
+<span class="object-card-meta">${p.state} / ${p.artifact}</span>
+<h3>${p.name}<b>↗</b></h3>
+<p>${p.oneLine}</p>
+<span class="object-card-foot">${p.family} · ${p.aliases[0]}</span>
+</a>`).join('')}
+</div>
+</details>`).join('');
+}
+
+function renderTrends(){
+const list=document.getElementById('trendsList');
+list.innerHTML=projects.slice(0,5).map((p,i)=>{
+const m=getMeta(p.id);
+return `<a href="#" class="trend-item" onclick="visit('${p.id}')">
+<span class="trend-rank">#${i+1}</span>
+<span class="trend-name">${p.name}</span>
+<span class="trend-count">${m.likes}</span>
+</a>`}).join('');
+}
+
+function renderSuggestions(){
+const list=document.getElementById('suggestionsList');
+list.innerHTML=projects.slice(5,8).map(p=>`
+<div class="suggestion-item">
+<div class="sugg-avatar">${p.name[0]}</div>
+<div><strong>${p.name}</strong><span>${p.family}</span></div>
+<button class="follow-btn" onclick="this.textContent=this.textContent==='Seguir'?'Seguindo':'Seguir'">Seguir</button>
+</div>`).join('');
+}
+
+function renderSurvived(){
+const grid=document.getElementById('survivedGrid');
+grid.innerHTML=projects.filter(p=>p.state!=='LOST').slice(0,6).map((p,i)=>`
+<a href="#" class="survived-card" onclick="visit('${p.id}')">
+<span class="survived-index">${String(i+1).padStart(2,'0')}</span>
+<strong>${p.name}</strong>
+<span>${p.artifact}</span>
+<i class="status-indicator">${p.state}</i>
+</a>`).join('');
+}
+
+function setView(v){
+state.view=v;
+document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+event.target.classList.add('active');
+if(v==='feed'){
+document.getElementById('feedContainer').style.display='flex';
+document.getElementById('drawersContainer').style.display='none';
+}else{
+document.getElementById('feedContainer').style.display='none';
+document.getElementById('drawersContainer').style.display='block';
+renderDrawers();
+}
+}
+
+function setFilter(f){
+state.filter=f;
+document.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
+event.target.classList.add('on');
+renderFeed();
+}
+
+function visit(id){
+state.visited.add(id);
+updateStats();
+}
+
+function toggleLike(id){
+if(state.liked.has(id))state.liked.delete(id);
+else state.liked.add(id);
+renderFeed();
+updateStats();
+}
+
+function toggleSave(id){
+if(state.saved.has(id))state.saved.delete(id);
+else state.saved.add(id);
+renderFeed();
+updateStats();
+}
+
+function updateStats(){
+const v=state.visited.size;
+const l=state.liked.size;
+const s=state.saved.size;
+document.getElementById('statVisited').textContent=v;
+document.getElementById('profileLevel').textContent=Math.floor(v/3)+1;
+document.getElementById('psVisited').textContent=v;
+document.getElementById('psLikes').textContent=l;
+document.getElementById('psSaves').textContent=s;
+document.getElementById('footerCount').textContent=`${projects.length} projetos`;
+document.getElementById('footerVisited').textContent=`${v} visitas`;
+}
+
+function randomProject(){
+const p=projects[Math.floor(Math.random()*projects.length)];
+alert(`Projeto aleatório: ${p.name}\n${p.oneLine}`);
+}
+
+function toggleLang(){
+const btn=event.target;
+state.lang=state.lang==='pt'?'en':'pt';
+btn.textContent=state.lang==='pt'?'PT':'EN';
+}
+
+init();
+</script>
+</body>
+</html>

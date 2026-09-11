@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import './dossier.css';
+import './varal.css';
 
 export const metadata: Metadata = {
-  title: 'Arquivo Inacabado_ — The Unfinished Archive',
-  description: 'Um arquivo de coisas que decidimos tentar. A historical collection of unfinished projects and experiments.',
+  title: 'VARAL_do_arquivo — pendure qualquer coisa',
+  description: 'Um varal de projetos inacabados. Uma rede social para mostrar projetos como no itch.io e Instagram.',
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
